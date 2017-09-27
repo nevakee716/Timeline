@@ -17,15 +17,9 @@
         "Type": 0
     },
     {
-        "Id": "popOutList",
-        "DisplayName": "PopOut List",
-        "Description": "list the scriptname of the objectType and the popOut",
-        "Type": 0
-    },
-    {
-        "Id": "specificGroup",
-        "DisplayName": "Specific Group List",
-        "Description": "list the nodeIDs and the assignGroup",
+        "Id": "steps",
+        "DisplayName": "Steps",
+        "Description": "Use a json object to describe your step (see documentation)",
         "Type": 0
     }]
 }

@@ -20,77 +20,16 @@
         this.objects = {};
         this.layoutsByNodeId = {};
         this.init = true;
-        this.multiLineCount = this.options.CustomOptions['multiLineCount'];
-        this.getspecificGroupList(this.options.CustomOptions['specificGroup']);        
-        this.getPopOutList(this.options.CustomOptions['popOutList']);
+        this.multiLineCount = this.options.CustomOptions['multiLineCount'];     
         this.getHiddenNodeList(this.options.CustomOptions['hidden-nodes']);
 
         this.timelineGroups = new vis.DataSet();
         this.timelineItems = new vis.DataSet();
-
-
-        this.steps = {
-            "step1" : {
-                "name" : "step1",
-                "start" : "WHENCREATED",
-                "end" : "GOLIVEDATE"
-            },
-            "step2" : {
-                "name" : "step2",
-                "start" : "GOLIVEDATE",
-                "end" : "ENDDATE"
-            }
-        };
+        this.steps = JSON.parse(this.options.CustomOptions['steps']);
     };
 
 
-    cwLayoutTimeline.prototype.getPopOutList = function(options) {
-        if(options) {
-            var optionList = options.split("#");
-            var optionSplit;
 
-            for (var i = 0; i < optionList.length; i += 1) {
-                if(optionList[i] !== "") {
-                    var optionSplit = optionList[i].split(",");
-                    this.popOut[optionSplit[0]] = optionSplit[1];
-                }
-            }
-        }
-    };
-
-    cwLayoutTimeline.prototype.getGroupToSelectOnStart = function(options) {
-        if(options) {
-            this.groupToSelectOnStart = options.split(",");
-        }
-    };
-
-    cwLayoutTimeline.prototype.getdirectionList = function(options) {
-        if(options) {
-            var optionList = options.split("#");
-            var optionSplit;
-
-            for (var i = 0; i < optionList.length; i += 1) {
-                if(optionList[i] !== "") {
-                    var optionSplit = optionList[i].split(",");
-                    this.directionList[optionSplit[0]] = optionSplit[1];
-                }
-            }
-        }
-    };
-
-    cwLayoutTimeline.prototype.getspecificGroupList = function(options) {
-        if(options) {
-            var optionList = options.split("#");
-            var optionSplit;
-
-            for (var i = 0; i < optionList.length; i += 1) {
-                if(optionList[i] !== "") {
-                    var optionSplit = optionList[i].split(",");
-                    this.specificGroup[optionSplit[0]] = optionSplit[1];
-                }
-            }
-        }
-    };
 
     cwLayoutTimeline.prototype.getHiddenNodeList = function(options) {
         if(options) {
@@ -124,7 +63,7 @@
         return getDisplayStringFromLayout(this.layoutsByNodeId[item.nodeID]);
     };
 
-    cwLayoutTimeline.prototype.simplify = function (child,father,hiddenNode) {
+    cwLayoutTimeline.prototype.simplify = function (child,fatherID) {
         var childrenArray = [];
         var filterArray = [];
         var filtersGroup = [];
@@ -138,20 +77,26 @@
                 for (var i = 0; i < child.associations[associationNode].length; i += 1) {
                     nextChild = child.associations[associationNode][i];
                     if(this.hiddenNodes.indexOf(associationNode) !== -1) { // jumpAndMerge when hidden
-                        childrenArray = childrenArray.concat(this.simplify(nextChild,father,true));
+                        childrenArray = childrenArray.concat(this.simplify(nextChild,fatherID));
                     } else { // adding regular node
                         element = {}; 
-                        element.content = cwAPI.getItemLinkWithName(nextChild);//this.multiLine(this.getItemDisplayString(nextChild),this.multiLineCount);
-                        element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName;
+                        element.content = cwAPI.getItemLinkWithName(nextChild).replace(nextChild.name,this.multiLine(this.getItemDisplayString(nextChild),this.multiLineCount));
+                        if(fatherID) element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName + "_" + fatherID;
+                        else element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName;
                         element.objectTypeScriptName = nextChild.objectTypeScriptName;
-                        element.children = this.simplify(nextChild,element);
-                        element.nestedGroups = [];
-                        for (var k = 0; k < element.children.length; k += 1) {
-                            nestedGroups.push(element.children[k].id);
+                        element.children = this.simplify(nextChild,element.id);
+                        if(element.children.length > 0 ) {
+                            element.nestedGroups = [];
+                            for (var k = 0; k < element.children.length; k += 1) {
+                                element.nestedGroups.push(element.children[k].id);
+                            }
                         }
                         childrenArray.push(element);  
-                        this.timelineGroups.add(element);
-                        this.createTimelineItems(nextChild,element.id);
+                        if(this.timelineGroups.getIds().indexOf(element.id) === -1) {
+                            this.timelineGroups.add(element);
+                            this.createTimelineItems(nextChild,element.id,associationNode);
+                        } 
+                        
                     }
                 }
             } 
@@ -161,25 +106,30 @@
     };
 
 
-    cwLayoutTimeline.prototype.createTimelineItems = function(object,id) {
+    cwLayoutTimeline.prototype.createTimelineItems = function(object,id,nodeID) {
         var s,step,timelineItem = {};
-        for(s in this.steps) {
-            if (this.steps.hasOwnProperty(s)) {
-                step = this.steps[s];
-                timelineItem.id = id + "_" + step.name;
-                timelineItem.group = id;
-                timelineItem.content = step.name;
-                if(object.properties[step.start.toLowerCase()]) {
-                    timelineItem.start = object.properties[step.start.toLowerCase()];
+        if(this.steps.hasOwnProperty(nodeID)) {
+            for(s in this.steps[nodeID]) {
+                if (this.steps[nodeID].hasOwnProperty(s)) {
+                    step = this.steps[nodeID][s];
+                    timelineItem.id = id + "_" + step.name;
+                    timelineItem.group = id;
+                    timelineItem.content = step.name;
+                    timelineItem.style = step.style;
+                    if(object.properties[step.start.toLowerCase()]) {
+                        timelineItem.start = object.properties[step.start.toLowerCase()];
 
-                    if(object.properties[step.end.toLowerCase()]) {
-                        timelineItem.end = object.properties[step.end.toLowerCase()];
-                    } else {
-                        timelineItem.end = new Date();            
-                    }           
-                    this.timelineItems.add(timelineItem);
+                        if(object.properties[step.end.toLowerCase()]) {
+                            timelineItem.end = object.properties[step.end.toLowerCase()];
+                        } else {
+                            timelineItem.end = new Date();            
+                        }    
+                        if(this.timelineItems.getIds().indexOf(timelineItem.id) === -1) {
+                          this.timelineItems.add(timelineItem);  
+                        }    
+                    }
                 }
-            }
+            }           
         }
     };
 
@@ -211,7 +161,7 @@
 
     // obligatoire appeler par le system
     cwLayoutTimeline.prototype.drawAssociations = function (output, associationTitleText, object) {
-        this.simplify(object);
+        this.simplify(object,null);
         output.push('<div id="cwLayoutTimeline_' + this.nodeID + '"></div>');
     };
 
