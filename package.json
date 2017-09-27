@@ -1,0 +1,21 @@
+{
+  "name": "Timeline",
+  "version": "1.0.0",
+  "description": "Allow you to display DateProperty of your objects (and their associated objects) in a Timeline",
+  "main": "src/Timeline.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nevakee716/Timeline.git"
+  },
+  "author": "Mathias Pfauwadel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nevakee716/Timeline/issues"
+  },
+  "homepage": "https://github.com/nevakee716/Timeline/wiki",
+  "wiki": "https://github.com/nevakee716/Timeline/wiki",
+  "evolve-version": "4.0 - 4.2"
+}
