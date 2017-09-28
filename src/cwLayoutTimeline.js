@@ -161,7 +161,12 @@
 
     // obligatoire appeler par le system
     cwLayoutTimeline.prototype.drawAssociations = function (output, associationTitleText, object) {
-        this.simplify(object,null);
+        var cpyObj  = $.extend({}, object);
+        var assoNode = {};
+        assoNode[this.mmNode.NodeID] = object.associations[this.mmNode.NodeID];
+        cpyObj.associations = assoNode;
+
+        this.simplify(cpyObj,null);
         output.push('<div id="cwLayoutTimeline_' + this.nodeID + '"></div>');
     };
 
