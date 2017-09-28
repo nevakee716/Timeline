@@ -1,17 +1,17 @@
 | **Name** | **Layout Timeline** | **Version** | 
 | --- | --- | --- |
-| **Updated by** | Mathias PFAUWADEL | 1.0 |
+| **Updated by** | Mathias PFAUWADEL | 1.1 |
 
 
 ## Patch Notes
 
+* 1.1 : Work on tab, objectPage
 * 1.0 : 1st version working
 
 ## To be Done
 
 * SearchText Box
 * More Options
-* Support tab
 * Filter
 * Export
 * Editable
