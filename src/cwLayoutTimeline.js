@@ -23,8 +23,6 @@
         this.multiLineCount = this.options.CustomOptions['multiLineCount'];     
         this.getHiddenNodeList(this.options.CustomOptions['hidden-nodes']);
 
-        this.timelineGroups = new vis.DataSet();
-        this.timelineItems = new vis.DataSet();
         this.steps = JSON.parse(this.options.CustomOptions['steps']);
     };
 
@@ -166,7 +164,7 @@
         assoNode[this.mmNode.NodeID] = object.associations[this.mmNode.NodeID];
         cpyObj.associations = assoNode;
 
-        this.simplify(cpyObj,null);
+        this.JSONobjects = cpyObj; 
         output.push('<div id="cwLayoutTimeline_' + this.nodeID + '"></div>');
     };
 
@@ -196,6 +194,10 @@
 
 // Building network
     cwLayoutTimeline.prototype.createTimeline = function () {  
+
+        this.timelineGroups = new vis.DataSet();
+        this.timelineItems = new vis.DataSet(); 
+    this.simplify(this.JSONobjects,null);
 
         var timeLineContainer = document.getElementById("cwLayoutTimeline_" + this.nodeID);
         // initialize your network!/*# sourceMappingURL=bootstrap.min.css.map */
