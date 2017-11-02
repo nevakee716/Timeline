@@ -114,10 +114,10 @@
                     timelineItem.group = id;
                     timelineItem.content = step.name;
                     timelineItem.style = step.style;
-                    if(object.properties[step.start.toLowerCase()]) {
+                    if(object.properties[step.start.toLowerCase()] && Date.parse(object.properties[step.start.toLowerCase()]) > 0) {
                         timelineItem.start = object.properties[step.start.toLowerCase()];
 
-                        if(object.properties[step.end.toLowerCase()]) {
+                        if(object.properties[step.end.toLowerCase()] && Date.parse(object.properties[step.end.toLowerCase()]) > 0) {
                             timelineItem.end = object.properties[step.end.toLowerCase()];
                         } else {
                             timelineItem.end = new Date();            
