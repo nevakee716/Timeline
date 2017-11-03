@@ -79,6 +79,7 @@
                     } else { // adding regular node
                         element = {}; 
                         element.content = cwAPI.getItemLinkWithName(nextChild).replace(nextChild.name,this.multiLine(this.getItemDisplayString(nextChild),this.multiLineCount));
+                        element.sort = nextChild.name;
                         if(fatherID) element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName + "_" + fatherID;
                         else element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName;
                         element.objectTypeScriptName = nextChild.objectTypeScriptName;
@@ -205,7 +206,7 @@
         var canvaHeight  = window.innerHeight - document.getElementsByClassName("page-content")[0].offsetHeight - document.getElementsByClassName("page-title")[0].offsetHeight;
 
         var options = {
-            groupOrder: 'content',  // groupOrder can be a property name or a sorting function, 
+            groupOrder: 'sort',  // groupOrder can be a property name or a sorting function, 
             stack: false,
             orientation: 'both',
             verticalScroll: true,
