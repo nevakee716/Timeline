@@ -58,7 +58,8 @@ The C:\Casewise\Evolve\Site\bin\evolve.json containes now all of your layout, if
 * Put the contenant of external in Casewise\Evolve\Site\bin\webDesigner\js\external
 * Put the contenant of modules in Casewise\Evolve\Site\bin\webDesigner\libs\modules
 * Put the contenant of fonts in Casewise\Evolve\Site\bin\webDesigner\fonts
-* Put the contenant of angularHTMLayout in Casewise\Evolve\Data\Common\html\angularLayouts
+* Put the contenant of angularHTMLayout in Casewise\Evolve\Data\Common\html\
+* Put the contenant of theme in Casewise\Evolve\Site\bin\webDesigner\themes
 
 # Create a Custom Layout 
 
