@@ -1,11 +1,11 @@
 | **Name** | **Layout Timeline** | **Version** | 
 | --- | --- | --- |
-| **Updated by** | Mathias PFAUWADEL | 1.2 |
+| **Updated by** | Mathias PFAUWADEL | 1.3 |
 
 
 ## Patch Notes
 
-* 1.2 : Allow you to group children objects by step
+* 1.3 : Allow you to group children objects by step
 * 1.1 : Work on tab, objectPage
 * 1.0 : 1st version working
 
