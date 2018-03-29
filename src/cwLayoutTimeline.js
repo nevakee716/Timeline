@@ -248,14 +248,21 @@
 
         this.timelineGroups = new vis.DataSet();
         this.timelineItems = new vis.DataSet(); 
-    this.simplify(this.JSONobjects,null);
+        this.simplify(this.JSONobjects,null);
 
         var timeLineContainer = document.getElementById("cwLayoutTimeline_" + this.nodeID);
         // initialize your network!/*# sourceMappingURL=bootstrap.min.css.map */
 
         var canvaHeight  = window.innerHeight - document.getElementsByClassName("page-content")[0].offsetHeight - document.getElementsByClassName("page-title")[0].offsetHeight;
 
+
+        function customOrder (a, b) {
+            // order by id
+            return b.start - a.start;
+        }
+
         var options = {
+            order : customOrder,
             groupOrder: 'sort',  // groupOrder can be a property name or a sorting function, 
             stack: this.stack,
             orientation: 'both',
