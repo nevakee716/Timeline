@@ -11,6 +11,12 @@
         "Type": 0
     },
     {
+        "Id": "merged-nodes",
+        "DisplayName": "Merged Nodes by step",
+        "Description": "Use comma as splitter character",
+        "Type": 0
+    },
+    {
         "Id": "steps",
         "DisplayName": "Steps",
         "Description": "Use a json object to describe your step (see documentation)",

@@ -20,28 +20,27 @@
         this.objects = {};
         this.layoutsByNodeId = {};
         this.init = true;
+        this.stack = false; 
         this.multiLineCount = this.options.CustomOptions['multiLineCount'];     
-        this.getHiddenNodeList(this.options.CustomOptions['hidden-nodes']);
-
+        this.getOption('hidden-nodes','hiddenNodes',',');
+        this.getOption('merged-nodes','mergedNodes',',');
         this.steps = JSON.parse(this.options.CustomOptions['steps']);
     };
 
 
-
-
-    cwLayoutTimeline.prototype.getHiddenNodeList = function(options) {
+    cwLayoutTimeline.prototype.getOption = function(options,name,splitter) {
+        options = this.options.CustomOptions[options];
+        this[name] = [];
         if(options) {
-
-            var optionList = options.split(",");
+            var optionList = options.split(splitter);
             var optionSplit;
             for (var i = 0; i < optionList.length; i += 1) {
                 if(optionList[i] !== "") {
-                    this.hiddenNodes.push(optionList[i]);
+                    this[name].push(optionList[i]);
                 }
             }
         }
     };
-
 
     cwLayoutTimeline.prototype.getItemDisplayString = function(item){
         var l, getDisplayStringFromLayout = function(layout){
@@ -83,13 +82,19 @@
                         if(fatherID) element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName + "_" + fatherID;
                         else element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName;
                         element.objectTypeScriptName = nextChild.objectTypeScriptName;
-                        element.children = this.simplify(nextChild,element.id);
-                        if(element.children.length > 0 ) {
+                        if(this.mergedNodes.indexOf(associationNode) !== -1) {
                             element.nestedGroups = [];
-                            for (var k = 0; k < element.children.length; k += 1) {
-                                element.nestedGroups.push(element.children[k].id);
-                            }
+                            this.createTimelineItemsOfChildrens(nextChild,element);
+                        } else {
+                           element.children = this.simplify(nextChild,element.id);
+                            if(element.children.length > 0 ) {
+                                element.nestedGroups = [];
+                                for (var k = 0; k < element.children.length; k += 1) {
+                                    element.nestedGroups.push(element.children[k].id);
+                                }
+                            } 
                         }
+                        
                         childrenArray.push(element);  
                         if(this.timelineGroups.getIds().indexOf(element.id) === -1) {
                             this.timelineGroups.add(element);
@@ -104,6 +109,51 @@
         return childrenArray;
     };
 
+    cwLayoutTimeline.prototype.createTimelineItemsOfChildrens = function(child,element) {
+
+        var s,step,nextChild,timelineItem,nestedElement;
+        for (var associationNode in child.associations) {
+            if (child.associations.hasOwnProperty(associationNode)) {
+                if(this.steps.hasOwnProperty(associationNode)) {
+                    for(s in this.steps[associationNode]) {
+                        step = this.steps[associationNode][s];
+                        nestedElement = {}; 
+                        nestedElement.content = step.name;
+                        nestedElement.id = element.id + "_" + step.name;
+                        this.timelineGroups.add(nestedElement);
+                        element.nestedGroups.push(nestedElement.id);
+
+                        if (this.steps[associationNode].hasOwnProperty(s)) {
+                            for (var i = 0; i < child.associations[associationNode].length; i += 1) {
+                                nextChild = child.associations[associationNode][i];
+                                timelineItem = {};
+                                timelineItem.id = element.id + "_" + step.name + "#" + nextChild.objectTypeScriptName + "_" + nextChild.object_id;
+                                timelineItem.group = nestedElement.id;
+                                timelineItem.content = cwAPI.getItemLinkWithName(nextChild).replace(nextChild.name,this.multiLine(this.getItemDisplayString(nextChild),this.multiLineCount));
+                                timelineItem.title = timelineItem.content;
+                                timelineItem.style = step.style;
+                                if(nextChild.properties[step.start.toLowerCase()] && Date.parse(nextChild.properties[step.start.toLowerCase()]) > 0) {
+                                    timelineItem.start = nextChild.properties[step.start.toLowerCase()];
+
+                                    if(nextChild.properties[step.end.toLowerCase()] && Date.parse(nextChild.properties[step.end.toLowerCase()]) > 0) {
+                                        timelineItem.end = nextChild.properties[step.end.toLowerCase()];
+                                    } else {
+                                        timelineItem.end = new Date();            
+                                    }    
+                                    if(this.timelineItems.getIds().indexOf(timelineItem.id) === -1) {
+                                      this.timelineItems.add(timelineItem); 
+                                      this.stack = true; 
+                                    }    
+                                }
+                            }
+                        }           
+                    }
+                }
+            }
+        }
+
+    };
+
 
     cwLayoutTimeline.prototype.createTimelineItems = function(object,id,nodeID) {
         var s,step,timelineItem = {};
@@ -115,9 +165,9 @@
                     timelineItem.group = id;
                     timelineItem.content = step.name;
                     timelineItem.style = step.style;
+                    if(step.title) timelineItem.title = step.title;
                     if(object.properties[step.start.toLowerCase()] && Date.parse(object.properties[step.start.toLowerCase()]) > 0) {
                         timelineItem.start = object.properties[step.start.toLowerCase()];
-
                         if(object.properties[step.end.toLowerCase()] && Date.parse(object.properties[step.end.toLowerCase()]) > 0) {
                             timelineItem.end = object.properties[step.end.toLowerCase()];
                         } else {
@@ -166,7 +216,7 @@
         cpyObj.associations = assoNode;
 
         this.JSONobjects = cpyObj; 
-        output.push('<div id="cwLayoutTimeline_' + this.nodeID + '"></div>');
+        output.push('<div class="cw-visible" id="cwLayoutTimeline_' + this.nodeID + '"></div>');
     };
 
 
@@ -207,7 +257,7 @@
 
         var options = {
             groupOrder: 'sort',  // groupOrder can be a property name or a sorting function, 
-            stack: false,
+            stack: this.stack,
             orientation: 'both',
             verticalScroll: true,
             maxHeight: canvaHeight
