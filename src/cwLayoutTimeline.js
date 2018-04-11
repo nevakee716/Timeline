@@ -169,16 +169,20 @@
                     timelineItem.title = step.name;
                     timelineItem.style = step.style;
                     if(step.title) timelineItem.title = step.title;
-                    if(object.properties[step.start.toLowerCase()] && Date.parse(object.properties[step.start.toLowerCase()]) > 0) {
+                    if(step.start && object.properties[step.start.toLowerCase()] && Date.parse(object.properties[step.start.toLowerCase()]) > 0) {
                         timelineItem.start = object.properties[step.start.toLowerCase()];
-                        if(object.properties[step.end.toLowerCase()] && Date.parse(object.properties[step.end.toLowerCase()]) > 0) {
-                            timelineItem.end = object.properties[step.end.toLowerCase()];
+                        if(step.end) {
+                            if(object.properties[step.end.toLowerCase()] && Date.parse(object.properties[step.end.toLowerCase()]) > 0) {
+                                timelineItem.end = object.properties[step.end.toLowerCase()];
+                            } else {
+                                timelineItem.end = new Date();            
+                            }    
+                            if(this.timelineItems.getIds().indexOf(timelineItem.id) === -1) {
+                              this.timelineItems.add(timelineItem);  
+                            }    
                         } else {
-                            timelineItem.end = new Date();            
-                        }    
-                        if(this.timelineItems.getIds().indexOf(timelineItem.id) === -1) {
-                          this.timelineItems.add(timelineItem);  
-                        }    
+                            timeline.type = "point";
+                        }
                     }
                 }
             }           
