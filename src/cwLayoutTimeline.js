@@ -79,8 +79,8 @@
                         element = {}; 
                         element.content = cwAPI.getItemLinkWithName(nextChild).replace(nextChild.name,this.multiLine(this.getItemDisplayString(nextChild),this.multiLineCount));
                         element.sort = nextChild.name;
-                        element.subgroupStack = false;
-                        element.stack = false;
+                        element.subgroupStack = this.stack;
+                        element.stack = this.stack;
 
                         if(fatherID) element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName + "_" + fatherID;
                         else element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName;
@@ -163,6 +163,7 @@
             for(s in this.steps[nodeID]) {
                 if (this.steps[nodeID].hasOwnProperty(s)) {
                     step = this.steps[nodeID][s];
+                    timelineItem = {};
                     timelineItem.id = id + "_" + step.name;
                     timelineItem.group = id;
                     timelineItem.content = step.name;
@@ -177,11 +178,10 @@
                             } else {
                                 timelineItem.end = new Date();            
                             }    
-                            if(this.timelineItems.getIds().indexOf(timelineItem.id) === -1) {
-                              this.timelineItems.add(timelineItem);  
-                            }    
-                        } else {
-                            timeline.type = "point";
+    
+                        }
+                        if(this.timelineItems.getIds().indexOf(timelineItem.id) === -1) {
+                            this.timelineItems.add(timelineItem);  
                         }
                     }
                 }
@@ -270,14 +270,14 @@
 
         var options = {
             groupOrder: 'sort',  // groupOrder can be a property name or a sorting function, 
-            stack: false,
-            stackSubgroups: false,
+            stack: this.stack,
+            stackSubgroups: this.stack,
             orientation: 'both',
             verticalScroll: true,
             maxHeight: canvaHeight
         };
 
-        if(this.stack) options.order = customOrder;
+        if(this.stack == true) options.order = customOrder;
 
         this.timeLineUI = new vis.Timeline(timeLineContainer, this.timelineItems, this.timelineGroups,options);
 
