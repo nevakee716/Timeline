@@ -20,7 +20,7 @@
         this.objects = {};
         this.layoutsByNodeId = {};
         this.init = true;
-        this.stack = false; 
+        this.stack =  this.options.CustomOptions['stack'];  
         this.multiLineCount = this.options.CustomOptions['multiLineCount'];     
         this.getOption('hidden-nodes','hiddenNodes',',');
         this.getOption('merged-nodes','mergedNodes',',');
@@ -79,6 +79,9 @@
                         element = {}; 
                         element.content = cwAPI.getItemLinkWithName(nextChild).replace(nextChild.name,this.multiLine(this.getItemDisplayString(nextChild),this.multiLineCount));
                         element.sort = nextChild.name;
+                        element.subgroupStack = false;
+                        element.stack = false;
+
                         if(fatherID) element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName + "_" + fatherID;
                         else element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName;
                         element.objectTypeScriptName = nextChild.objectTypeScriptName;
@@ -142,7 +145,6 @@
                                     }    
                                     if(this.timelineItems.getIds().indexOf(timelineItem.id) === -1) {
                                       this.timelineItems.add(timelineItem); 
-                                      this.stack = true; 
                                     }    
                                 }
                             }
@@ -156,7 +158,7 @@
 
 
     cwLayoutTimeline.prototype.createTimelineItems = function(object,id,nodeID) {
-        var s,step,timelineItem = {};
+        var d, s,step,timelineItem = {};
         if(this.steps.hasOwnProperty(nodeID)) {
             for(s in this.steps[nodeID]) {
                 if (this.steps[nodeID].hasOwnProperty(s)) {
@@ -164,6 +166,7 @@
                     timelineItem.id = id + "_" + step.name;
                     timelineItem.group = id;
                     timelineItem.content = step.name;
+                    timelineItem.title = step.name;
                     timelineItem.style = step.style;
                     if(step.title) timelineItem.title = step.title;
                     if(object.properties[step.start.toLowerCase()] && Date.parse(object.properties[step.start.toLowerCase()]) > 0) {
@@ -262,13 +265,16 @@
         }
 
         var options = {
-            order : customOrder,
             groupOrder: 'sort',  // groupOrder can be a property name or a sorting function, 
-            stack: this.stack,
+            stack: false,
+            stackSubgroups: false,
             orientation: 'both',
             verticalScroll: true,
             maxHeight: canvaHeight
         };
+
+        if(this.stack) options.order = customOrder;
+
         this.timeLineUI = new vis.Timeline(timeLineContainer, this.timelineItems, this.timelineGroups,options);
 
 

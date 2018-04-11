@@ -21,5 +21,10 @@
         "DisplayName": "Steps",
         "Description": "Use a json object to describe your step (see documentation)",
         "Type": 0
+    },{
+        "Id": "stack",
+        "DisplayName": "Stack",
+        "Description": "Time items stacked?",
+        "Type": 1
     }]
 }
