@@ -21,6 +21,7 @@
         this.layoutsByNodeId = {};
         this.init = true;
         this.stack =  this.options.CustomOptions['stack'];  
+        if(this.stack === undefined) this.stack = false;
         this.multiLineCount = this.options.CustomOptions['multiLineCount'];     
         this.getOption('hidden-nodes','hiddenNodes',',');
         this.getOption('merged-nodes','mergedNodes',',');

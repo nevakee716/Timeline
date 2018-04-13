@@ -5,6 +5,7 @@
 
 ## Patch Notes
 
+* 1.4 : You can choose if you want to stack or not. You can have point date
 * 1.3 : Allow you to group children objects by step
 * 1.1 : Work on tab, objectPage
 * 1.0 : 1st version working
@@ -40,6 +41,10 @@ Set the ID of the nodes you don't want to appear, the children will be display i
 
 Set the ID of the nodes where you want your children to be merged by Step (see Exemple)
 
+### Stack :
+
+The different step will not overlap if checked.
+
 ## Steps
 
 Describe your step in a json file, then mimify it on https://www.cleancss.com/json-minify/
@@ -73,6 +78,7 @@ Here is an exemple :
 }
 
 ```
+If you don't put "end" in your step, the time entry will be display as a point
 
 ## Exemple 
 
