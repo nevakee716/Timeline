@@ -134,20 +134,24 @@
                                 timelineItem.id = element.id + "_" + step.name + "#" + nextChild.objectTypeScriptName + "_" + nextChild.object_id;
                                 timelineItem.group = nestedElement.id;
                                 timelineItem.content = cwAPI.getItemLinkWithName(nextChild).replace(nextChild.name,this.multiLine(this.getItemDisplayString(nextChild),this.multiLineCount));
-                                timelineItem.title = timelineItem.content;
+                                
                                 timelineItem.style = step.style;
                                 if(nextChild.properties[step.start.toLowerCase()] && Date.parse(nextChild.properties[step.start.toLowerCase()]) > 0) {
-                                    timelineItem.start = nextChild.properties[step.start.toLowerCase()];
+                                    timelineItem.start = new Date(nextChild.properties[step.start.toLowerCase()]);
 
                                     if(nextChild.properties[step.end.toLowerCase()] && Date.parse(nextChild.properties[step.end.toLowerCase()]) > 0) {
-                                        timelineItem.end = nextChild.properties[step.end.toLowerCase()];
+                                        timelineItem.end = new Date(nextChild.properties[step.end.toLowerCase()]);
                                     } else {
                                         timelineItem.end = new Date();            
                                     }    
+
+                                    timelineItem.title = timelineItem.content + "(" + moment(timelineItem.start).format("DD/MM/YYYY")  + "=>" + moment(timelineItem.end).format("DD/MM/YYYY")  + ")";
+
                                     if(this.timelineItems.getIds().indexOf(timelineItem.id) === -1) {
                                       this.timelineItems.add(timelineItem); 
                                     }    
                                 }
+
                             }
                         }           
                     }
@@ -168,19 +172,21 @@
                     timelineItem.id = id + "_" + step.name;
                     timelineItem.group = id;
                     timelineItem.content = step.name;
-                    timelineItem.title = step.name;
                     timelineItem.style = step.style;
                     if(step.title) timelineItem.title = step.title;
                     if(step.start && object.properties[step.start.toLowerCase()] && Date.parse(object.properties[step.start.toLowerCase()]) > 0) {
-                        timelineItem.start = object.properties[step.start.toLowerCase()];
+                        timelineItem.start = new Date(object.properties[step.start.toLowerCase()]);
                         if(step.end) {
                             if(object.properties[step.end.toLowerCase()] && Date.parse(object.properties[step.end.toLowerCase()]) > 0) {
-                                timelineItem.end = object.properties[step.end.toLowerCase()];
+                                timelineItem.end = new Date(object.properties[step.end.toLowerCase()]);
                             } else {
                                 timelineItem.end = new Date();            
                             }    
     
                         }
+                        timelineItem.title = timelineItem.content + "(" + moment(timelineItem.start).format("DD/MM/YYYY")  + "=>" + moment(timelineItem.end).format("DD/MM/YYYY")  + ")";
+
+
                         if(this.timelineItems.getIds().indexOf(timelineItem.id) === -1) {
                             this.timelineItems.add(timelineItem);  
                         }
