@@ -184,9 +184,9 @@
                         if (self.steps[associationNode].hasOwnProperty(s)) {
                             step = self.steps[associationNode][s];
                             timelineItem = {};
-                            timelineItem.id = id + "_" + nextChild.name;
+                            timelineItem.id = id + "_" + nextChild.name + "_" + step.name;
                             timelineItem.group = id;
-                            timelineItem.content = cwAPI.getItemLinkWithName(nextChild).replace(nextChild.name,self.getItemDisplayString(nextChild));
+                            timelineItem.content = cwAPI.getItemLinkWithName(nextChild).replace(nextChild.name,self.getItemDisplayString(nextChild) + step.name);
                             self.pushTimeItem(timelineItem,nextChild,step);
 
                         }
