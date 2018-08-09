@@ -11,8 +11,20 @@
         "Type": 0
     },
     {
+        "Id": "complementaryNode",
+        "DisplayName": "Complementary Node",
+        "Description": "Select Nodes you want to add that are not under your layout timeline",
+        "Type": 0
+    },
+    {
         "Id": "merged-nodes",
         "DisplayName": "Merged Nodes by step",
+        "Description": "Use comma as splitter character",
+        "Type": 0
+    },
+    {
+        "Id": "node-as-timeElement",
+        "DisplayName": "Children are time element",
         "Description": "Use comma as splitter character",
         "Type": 0
     },
