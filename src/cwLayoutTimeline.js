@@ -63,6 +63,23 @@
         return getDisplayStringFromLayout(this.layoutsByNodeId[item.nodeID]);
     };
 
+    cwLayoutTimeline.prototype.getCDSWithLink = function(item,particule) {
+        if(particule === undefined) particule = "";
+        return cwAPI.getItemLinkWithName(item).replace(item.name, this.getItemDisplayString(item) + particule);
+    };
+
+    cwLayoutTimeline.prototype.getCDSWithLinkAndPopOut = function(item,particule) {
+        let r = this.getCDSWithLink(item,particule);
+        let popOutText = '<i class="fa fa-external-link" aria-hidden="true"></i>';
+        let popOutName = cwApi.replaceSpecialCharacters(item.objectTypeScriptName) + "_diagram_popout";
+        if (cwAPI.ViewSchemaManager.pageExists(popOutName) === true && cwAPI.customFunction.openDiagramPopoutWithID) {
+            let popoutElement = ' <span class="iTimelinePopOutIcon" onclick="cwAPI.customFunction.openDiagramPopoutWithID(' + item.object_id + ',\'' + popOutName + '\');">' + popOutText + "</span>";
+            r += popoutElement;
+        }
+        r = "<span>" + r + "</span>";
+        return r;
+    };
+
     cwLayoutTimeline.prototype.parseNode = function(child, callback) {
         for (var associationNode in child.associations) {
             if (child.associations.hasOwnProperty(associationNode)) {
@@ -90,10 +107,13 @@
                 childrenArray = childrenArray.concat(self.simplify(nextChild, fatherID));
             } else { // adding regular node
                 element = {};
-                element.content = cwAPI.getItemLinkWithName(nextChild).replace(nextChild.name, self.multiLine(self.getItemDisplayString(nextChild), self.multiLineCount));
+                element.content = self.getCDSWithLinkAndPopOut(nextChild);
                 element.sort = nextChild.name;
-                element.subgroupStack = self.stack;
-                element.stack = self.stack;
+                if(self.stack === false) {
+                    element.subgroupStack = self.stack;
+                    element.stack = self.stack;
+                }
+
 
                 if (fatherID) element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName + "_" + fatherID;
                 else element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName;
@@ -161,7 +181,7 @@
                                 timelineItem = {};
                                 timelineItem.id = element.id + "_" + step.name + "#" + nextChild.objectTypeScriptName + "_" + nextChild.object_id;
                                 timelineItem.group = nestedElement.id;
-                                timelineItem.content = cwAPI.getItemLinkWithName(nextChild).replace(nextChild.name, this.multiLine(this.getItemDisplayString(nextChild), this.multiLineCount));
+                                timelineItem.content = this.getCDSWithLinkAndPopOut(nextChild);
                                 this.pushTimeItem(timelineItem,nextChild,step);
                             }
                         }
@@ -186,7 +206,7 @@
                             timelineItem = {};
                             timelineItem.id = id + "_" + nextChild.name + "_" + step.name;
                             timelineItem.group = id;
-                            timelineItem.content = cwAPI.getItemLinkWithName(nextChild).replace(nextChild.name,self.getItemDisplayString(nextChild) + step.name);
+                            timelineItem.content = self.getCDSWithLinkAndPopOut(nextChild,step.name);
                             self.pushTimeItem(timelineItem,nextChild,step);
 
                         }
