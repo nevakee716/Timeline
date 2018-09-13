@@ -72,7 +72,7 @@
         let r = this.getCDSWithLink(item,particule);
         let popOutText = '<i class="fa fa-external-link" aria-hidden="true"></i>';
         let popOutName = cwApi.replaceSpecialCharacters(item.objectTypeScriptName) + "_diagram_popout";
-        if (cwAPI.ViewSchemaManager.pageExists(popOutName) === true && cwAPI.customFunction.openDiagramPopoutWithID) {
+        if (cwAPI.ViewSchemaManager.pageExists(popOutName) === true && cwAPI.customFunction && cwAPI.customFunction.openDiagramPopoutWithID) {
             let popoutElement = ' <span class="iTimelinePopOutIcon" onclick="cwAPI.customFunction.openDiagramPopoutWithID(' + item.object_id + ',\'' + popOutName + '\');">' + popOutText + "</span>";
             r += popoutElement;
         }
@@ -145,13 +145,15 @@
     cwLayoutTimeline.prototype.pushTimeItem = function(timelineItem, child, step) {
         timelineItem.style = step.style;
         if (step.title) timelineItem.title = step.title;
-        if (child.properties[step.start.toLowerCase()] && Date.parse(child.properties[step.start.toLowerCase()]) > 0) {
+        if (step.start && child.properties[step.start.toLowerCase()] && Date.parse(child.properties[step.start.toLowerCase()]) > 0) {
             timelineItem.start = new Date(child.properties[step.start.toLowerCase()]);
 
-            if (child.properties[step.end.toLowerCase()] && Date.parse(child.properties[step.end.toLowerCase()]) > 0) {
-                timelineItem.end = new Date(child.properties[step.end.toLowerCase()]);
-            } else {
-                timelineItem.end = new Date();
+            if (step.end) {
+                if(child.properties[step.end.toLowerCase()] && Date.parse(child.properties[step.end.toLowerCase()]) > 0) {
+                    timelineItem.end = new Date(child.properties[step.end.toLowerCase()]);
+                } else {
+                    timelineItem.end = new Date();
+                }
             }
 
             timelineItem.title = timelineItem.content + "(" + moment(timelineItem.start).format("DD/MM/YYYY") + "=>" + moment(timelineItem.end).format("DD/MM/YYYY") + ")";
