@@ -21,7 +21,7 @@
 
 
 ## Description 
-Allow you to display DateProperty of your objects (and their associated objects) in a Timeline. The Layout support one level of association, and the customDisplay string
+Allow you to display DateProperty of your objects (and their associated objects) in a Timeline. The Layout support one level of association, and the customDisplay string. It will also work with the customdisplay string enhanced.
 
 ## Screen Shot
 <img src="https://raw.githubusercontent.com/nevakee716/Timeline/master/screen/1.jpg" alt="Drawing" style="width: 95%;"/>
