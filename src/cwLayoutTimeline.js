@@ -312,7 +312,11 @@
         var timeLineContainer = document.getElementById("cwLayoutTimeline_" + this.nodeID);
         // initialize your network!/*# sourceMappingURL=bootstrap.min.css.map */
 
-        var canvaHeight = window.innerHeight - document.getElementsByClassName("page-content")[0].offsetHeight - document.getElementsByClassName("page-title")[0].offsetHeight;
+
+      // set height
+        var titleReact = document.querySelector("#cw-top-bar").getBoundingClientRect();
+        var topBarReact = document.querySelector(".page-top").getBoundingClientRect();
+        var canvaHeight  =  window.innerHeight - titleReact.height - topBarReact.height;
 
 
         function customOrder(a, b) {
