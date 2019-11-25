@@ -1,42 +1,50 @@
 {
-    "Name": "Timeline",
-    "DisplayName": "Timeline",
-    "Description": "Allow you to display a timeline of your objects and their associations",
-    "JavaScriptClassName": "cwLayoutTimeline",
-    "Options": [
+  "Name": "Timeline",
+  "DisplayName": "Timeline",
+  "Description": "Allow you to display a timeline of your objects and their associations",
+  "JavaScriptClassName": "cwLayoutTimeline",
+  "Options": [
     {
-        "Id": "hidden-nodes",
-        "DisplayName": "Hidden Nodes",
-        "Description": "Use comma as splitter character",
-        "Type": 0
+      "Id": "configuration",
+      "DisplayName": "Configuration",
+      "Description": "Use the Expert Mode of the timeline to create a configuration",
+      "Type": 0
     },
     {
-        "Id": "complementaryNode",
-        "DisplayName": "Complementary Node",
-        "Description": "Select Nodes you want to add that are not under your layout timeline",
-        "Type": 0
+      "Id": "hidden-nodes",
+      "DisplayName": "Hidden Nodes",
+      "Description": "Use comma as splitter character",
+      "Type": 0
     },
     {
-        "Id": "merged-nodes",
-        "DisplayName": "Merged Nodes by step",
-        "Description": "Use comma as splitter character",
-        "Type": 0
+      "Id": "complementaryNode",
+      "DisplayName": "Complementary Node",
+      "Description": "Select Nodes you want to add that are not under your layout timeline",
+      "Type": 0
     },
     {
-        "Id": "node-as-timeElement",
-        "DisplayName": "Children are time element",
-        "Description": "Use comma as splitter character",
-        "Type": 0
+      "Id": "merged-nodes",
+      "DisplayName": "Merged Nodes by step",
+      "Description": "Use comma as splitter character",
+      "Type": 0
     },
     {
-        "Id": "steps",
-        "DisplayName": "Steps",
-        "Description": "Use a json object to describe your step (see documentation)",
-        "Type": 0
-    },{
-        "Id": "stack",
-        "DisplayName": "Stack",
-        "Description": "Time items stacked?",
-        "Type": 1
-    }]
+      "Id": "node-as-timeElement",
+      "DisplayName": "Children are time element",
+      "Description": "Use comma as splitter character",
+      "Type": 0
+    },
+    {
+      "Id": "steps",
+      "DisplayName": "Steps",
+      "Description": "Use a json object to describe your step (see documentation)",
+      "Type": 0
+    },
+    {
+      "Id": "stack",
+      "DisplayName": "Stack",
+      "Description": "Time items stacked?",
+      "Type": 1
+    }
+  ]
 }
