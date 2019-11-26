@@ -25,6 +25,10 @@
 /* DIAGRAM TILE */
 /* MATRIX ADVANCED */
 .cwLayoutTimelineButtons {
+  z-index: 100;
   position: absolute;
   margin-top: 3px;
+}
+.cwLayoutTimelineButtons .btn.page-action.selected {
+  background-color: #03b4e7;
 }

@@ -3,11 +3,11 @@
 /*global cwAPI, jQuery */
 (function(cwApi, $) {
   "use strict";
-  if (cwApi && cwApi.cwLayouts && cwApi.cwLayouts.cwLayoutNetwork) {
-    var cwLayoutNetwork = cwApi.cwLayouts.cwLayoutNetwork;
+  if (cwApi && cwApi.cwLayouts && cwApi.cwLayouts.cwLayoutTimeline) {
+    var cwLayoutTimeline = cwApi.cwLayouts.cwLayoutTimeline;
   } else {
     // constructor
-    var cwLayoutNetwork = function(options, viewSchema) {
+    var cwLayoutTimeline = function(options, viewSchema) {
       cwApi.extend(this, cwApi.cwLayouts.CwLayout, options, viewSchema); // heritage
       cwApi.registerLayoutForJSActions(this); // execute le applyJavaScript après drawAssociations
       this.construct(options);
@@ -15,17 +15,17 @@
   }
 
   // manage Expert Mode
-  cwLayoutNetwork.prototype.manageExpertMode = function(event) {
+  cwLayoutTimeline.prototype.manageExpertMode = function(event) {
     var self = this;
     cwApi.CwAsyncLoader.load("angular", function() {
       if (self.expertMode === true) {
         self.expertMode = false;
-        event.target.innerText = $.i18n.prop("activate_expert_mode");
+        event.target.title = $.i18n.prop("activate_expert_mode");
         event.target.classList.remove("selected");
         cwAPI.CwPopout.hide();
       } else {
         self.expertMode = true;
-        event.target.innerText = $.i18n.prop("deactivate_expert_mode");
+        event.target.title = $.i18n.prop("deactivate_expert_mode");
         event.target.classList.add("selected");
         cwApi.CwPopout.showPopout($.i18n.prop("expert_mode"));
 
@@ -33,51 +33,51 @@
         self.setEventForExpertMode();
         cwApi.CwPopout.onClose(function() {
           self.expertMode = false;
-          event.target.innerText = $.i18n.prop("activate_expert_mode");
+          event.target.title = $.i18n.prop("activate_expert_mode");
         });
       }
     });
   };
 
   // manage Expert Mode
-  cwLayoutNetwork.prototype.createExpertModeElement = function() {
+  cwLayoutTimeline.prototype.createExpertModeElement = function() {
     var self = this;
     var tab = [];
     var tabs = ["networkNode", "networkPhysics", "networkGroups"];
     var expertModeConfig = document.createElement("div");
-    expertModeConfig.className = "cwLayoutNetworkExpertModeConfig";
-    expertModeConfig.id = "cwLayoutNetworkExpertModeConfig" + this.nodeID;
+    expertModeConfig.className = "cwLayoutTimelineExpertModeConfig";
+    expertModeConfig.id = "cwLayoutTimelineExpertModeConfig" + this.nodeID;
 
-    var cwLayoutNetworkExpertModeContainerTab = document.createElement("div");
-    cwLayoutNetworkExpertModeContainerTab.className = "cwLayoutNetworkExpertModeContainerTab";
-    cwLayoutNetworkExpertModeContainerTab.id = "cwLayoutNetworkExpertModeContainerTab" + this.nodeID;
-    expertModeConfig.appendChild(cwLayoutNetworkExpertModeContainerTab);
+    var cwLayoutTimelineExpertModeContainerTab = document.createElement("div");
+    cwLayoutTimelineExpertModeContainerTab.className = "cwLayoutTimelineExpertModeContainerTab";
+    cwLayoutTimelineExpertModeContainerTab.id = "cwLayoutTimelineExpertModeContainerTab" + this.nodeID;
+    expertModeConfig.appendChild(cwLayoutTimelineExpertModeContainerTab);
 
     var expertModeContainer = document.createElement("div");
-    expertModeContainer.className = "cwLayoutNetworkExpertModeContainer";
-    expertModeContainer.id = "cwLayoutNetworkExpertModeContainer";
+    expertModeContainer.className = "cwLayoutTimelineExpertModeContainer";
+    expertModeContainer.id = "cwLayoutTimelineExpertModeContainer";
     expertModeConfig.appendChild(expertModeContainer);
 
     tabs.forEach(function(t) {
       let tab = document.createElement("div");
-      tab.className = "cwLayoutNetworkExpertModeTabs";
+      tab.className = "cwLayoutTimelineExpertModeTabs";
       tab.id = t;
       tab.innerText = $.i18n.prop(t);
-      cwLayoutNetworkExpertModeContainerTab.appendChild(tab);
+      cwLayoutTimelineExpertModeContainerTab.appendChild(tab);
     });
     let tabElem = document.createElement("div");
-    tabElem.className = "cwLayoutNetworkExpertModeTabs";
+    tabElem.className = "cwLayoutTimelineExpertModeTabs";
     tabElem.id = "saveconfiguration";
     tabElem.innerHTML = '<i class="fa fa-floppy-o" aria-hidden="true"></i>';
-    cwLayoutNetworkExpertModeContainerTab.appendChild(tabElem);
+    cwLayoutTimelineExpertModeContainerTab.appendChild(tabElem);
 
     return expertModeConfig;
   };
 
-  cwLayoutNetwork.prototype.setEventForExpertMode = function() {
+  cwLayoutTimeline.prototype.setEventForExpertMode = function() {
     var self = this;
-    var $container = $("#cwLayoutNetworkExpertModeContainer");
-    let matches = document.querySelectorAll(".cwLayoutNetworkExpertModeTabs");
+    var $container = $("#cwLayoutTimelineExpertModeContainer");
+    let matches = document.querySelectorAll(".cwLayoutTimelineExpertModeTabs");
     for (let i = 0; i < matches.length; i++) {
       let t = matches[i];
       t.addEventListener("click", function(event) {
@@ -112,7 +112,7 @@
     }
   };
 
-  cwLayoutNetwork.prototype.controller_networkGroups = function($container, templatePath, $scope) {
+  cwLayoutTimeline.prototype.controller_networkGroups = function($container, templatePath, $scope) {
     $scope.bootstrapFilter = this.bootstrapFilter;
     $scope.checkIfContainObjectType = this.checkIfGroupMatchTemplate.bind(self);
     $scope.diagramTemplate = this.diagramTemplate;
@@ -134,15 +134,15 @@
     $scope.updateSplitGroupPropertyNode = this.updateSplitGroupPropertyNode.bind(self);
   };
 
-  cwLayoutNetwork.prototype.unselectTabs = function(tabs) {
-    let matches = document.querySelectorAll(".cwLayoutNetworkExpertModeTabs");
+  cwLayoutTimeline.prototype.unselectTabs = function(tabs) {
+    let matches = document.querySelectorAll(".cwLayoutTimelineExpertModeTabs");
     for (let i = 0; i < matches.length; i++) {
       let t = matches[i];
       t.className = t.className.replaceAll(" selected", "");
     }
   };
 
-  cwLayoutNetwork.prototype.setExpertModePhysics = function(container) {
+  cwLayoutTimeline.prototype.setExpertModePhysics = function(container) {
     var self = this;
 
     this.networkUI.options.configure = {
@@ -159,11 +159,11 @@
     };
     this.networkUI.setOptions(this.networkUI.options);
 
-    var buttonPhysicsConfig = document.getElementById("cwLayoutNetworkButtonPhysicsConfig" + this.nodeID);
+    var buttonPhysicsConfig = document.getElementById("cwLayoutTimelineButtonPhysicsConfig" + this.nodeID);
     if (buttonPhysicsConfig === null) {
       buttonPhysicsConfig = document.createElement("button");
-      buttonPhysicsConfig.className = "cwLayoutNetworkButtonPhysicsConfig k-grid k-button";
-      buttonPhysicsConfig.id = "cwLayoutNetworkButtonPhysicsConfig" + this.nodeID;
+      buttonPhysicsConfig.className = "cwLayoutTimelineButtonPhysicsConfig k-grid k-button";
+      buttonPhysicsConfig.id = "cwLayoutTimelineButtonPhysicsConfig" + this.nodeID;
       buttonPhysicsConfig.innerText = "Physics Configuration";
     }
 
@@ -177,7 +177,7 @@
     container.appendChild(buttonPhysicsConfig);
   };
 
-  cwLayoutNetwork.prototype.addGroup = function(groups) {
+  cwLayoutTimeline.prototype.addGroup = function(groups) {
     var g = [];
     g[0] = "New Group";
     g[1] = "ellipse";
@@ -189,7 +189,7 @@
     this.updateGroups(groups, g);
   };
 
-  cwLayoutNetwork.prototype.updateSplitGroupPropertyNode = function(group, value) {
+  cwLayoutTimeline.prototype.updateSplitGroupPropertyNode = function(group, value) {
     if (value === "none") this.splitGroupByProperty[group] = undefined;
     else this.splitGroupByProperty[group] = value;
 
@@ -212,7 +212,7 @@
     }
   };
 
-  cwLayoutNetwork.prototype.updateGroups = function(groups, changeGroup) {
+  cwLayoutTimeline.prototype.updateGroups = function(groups, changeGroup) {
     var output = "";
     var self = this;
     var gts = "";
@@ -271,14 +271,14 @@
     }
   };
 
-  cwLayoutNetwork.prototype.bootstrapFilter = function(id, value) {
+  cwLayoutTimeline.prototype.bootstrapFilter = function(id, value) {
     window.setTimeout(function(params) {
       $("#" + id).selectpicker();
       $("#" + id).selectpicker("val", value);
     }, 1000);
   };
 
-  cwLayoutNetwork.prototype.checkIfGroupMatchTemplate = function(group, template) {
+  cwLayoutTimeline.prototype.checkIfGroupMatchTemplate = function(group, template) {
     var OTs = this.groupsArt[group.replaceAll("Hidden", "")].objectTypes;
 
     for (var paletteEntry in template.diagram.paletteEntries) {
@@ -293,7 +293,7 @@
     return false;
   };
 
-  cwLayoutNetwork.prototype.nodeIDToFancyTree = function(node, noLoop) {
+  cwLayoutTimeline.prototype.nodeIDToFancyTree = function(node, noLoop) {
     var self = this;
     if (node === undefined) {
       node = this.viewSchema.NodesByID[this.nodeID];
@@ -313,7 +313,7 @@
     return node;
   };
 
-  cwLayoutNetwork.prototype.createNodeConfig = function(container) {
+  cwLayoutTimeline.prototype.createNodeConfig = function(container) {
     var tmpsource = [],
       source = [];
     let q = cwApi.getQueryStringObject();
@@ -342,12 +342,12 @@
     }
 
     var tree = document.createElement("div");
-    tree.className = "cwLayoutNetworkExpertModeNodesConfigTree";
-    tree.id = "cwLayoutNetworkExpertModeNodesConfigTree" + this.nodeID;
+    tree.className = "cwLayoutTimelineExpertModeNodesConfigTree";
+    tree.id = "cwLayoutTimelineExpertModeNodesConfigTree" + this.nodeID;
 
     var prop = document.createElement("div");
-    prop.className = "cwLayoutNetworkExpertModeNodesConfigProp";
-    prop.id = "cwLayoutNetworkExpertModeNodesConfigProp" + this.nodeID;
+    prop.className = "cwLayoutTimelineExpertModeNodesConfigProp";
+    prop.id = "cwLayoutTimelineExpertModeNodesConfigProp" + this.nodeID;
 
     container.appendChild(tree);
     container.appendChild(prop);
@@ -360,7 +360,7 @@
 
     templatePath = cwAPI.getCommonContentPath() + "/html/cwNetwork/expertModeNodeConfig.ng.html" + "?" + Math.random();
 
-    loader.loadControllerWithTemplate("expertModeNodeConfig", $("#cwLayoutNetworkExpertModeNodesConfigProp" + self.nodeID), templatePath, function($scope) {
+    loader.loadControllerWithTemplate("expertModeNodeConfig", $("#cwLayoutTimelineExpertModeNodesConfigProp" + self.nodeID), templatePath, function($scope) {
       $scope.data = {};
       $scope.config = {};
       $scope.config.hnode = false;
@@ -369,7 +369,7 @@
       $scope.config.egroup = "";
 
       $scope.optionString = {};
-      $("#cwLayoutNetworkExpertModeNodesConfigTree" + self.nodeID)
+      $("#cwLayoutTimelineExpertModeNodesConfigTree" + self.nodeID)
         .on("changed.jstree", function(e, data) {
           if (data.node && data.node.original) {
             $scope.data = data.node.original;
@@ -533,13 +533,13 @@
     });
   };
 
-  cwLayoutNetwork.prototype.updateNetworkData = function() {
+  cwLayoutTimeline.prototype.updateNetworkData = function() {
     this.setExternalFilterToNone();
     this.disableGroupClusters();
 
     this.copyObject = $.extend(true, {}, this.originalObject);
     var sObject = this.manageDataFromEvolve(this.copyObject);
-    this.network = new cwApi.customLibs.cwLayoutNetwork.network();
+    this.network = new cwApi.customLibs.cwLayoutTimeline.network();
     this.network.searchForNodesAndEdges(sObject, this.nodeOptions);
 
     this.setFilters();
@@ -589,6 +589,5 @@
     this.activateStartingGroup();
     this.enableSaveButtonEvent();
   };
-
-  cwApi.cwLayouts.cwLayoutNetwork = cwLayoutNetwork;
+  cwApi.cwLayouts.cwLayoutTimeline = cwLayoutTimeline;
 })(cwAPI, jQuery);

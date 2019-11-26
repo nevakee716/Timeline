@@ -3,11 +3,19 @@
 /*global cwAPI, jQuery */
 (function(cwApi, $) {
   "use strict";
-  // constructor
-  var cwLayoutTimeline = function(options, viewSchema) {
-    cwApi.extend(this, cwApi.cwLayouts.CwLayout, options, viewSchema); // heritage
-    cwApi.registerLayoutForJSActions(this); // execute le applyJavaScript après drawAssociations
+  if (cwApi && cwApi.cwLayouts && cwApi.cwLayouts.cwLayoutTimeline) {
+    var cwLayoutTimeline = cwApi.cwLayouts.cwLayoutTimeline;
+  } else {
+    // constructor
+    var cwLayoutTimeline = function(options, viewSchema) {
+      cwApi.extend(this, cwApi.cwLayouts.CwLayout, options, viewSchema); // heritage
+      this.viewSchema = viewSchema;
+      cwApi.registerLayoutForJSActions(this); // execute le applyJavaScript après drawAssociations
+      this.construct(options);
+    };
+  }
 
+  cwLayoutTimeline.prototype.construct = function(options) {
     try {
       this.config = JSON.parse(this.options.CustomOptions["configuration"]);
     } catch (e) {
@@ -157,7 +165,7 @@
 
     this.JSONobjects = cpyObj;
     output.push('<div class="cw-visible cwLayoutTimelineButtons" id="cwLayoutTimelineButtons_' + this.nodeID + '">');
-    if (cwApi.currentUser.PowerLevel === 1) output.push('<a class="btn page-action no-text fa fa-cogs" id="cwTimelineButtonsOptions' + this.nodeID + '" title="Expert mode"></i></a>');
+    if (cwApi.currentUser.PowerLevel === 1) output.push('<a class="btn page-action no-text fa fa-cogs" id="cwTimelineButtonsExpertMode' + this.nodeID + '" title="Expert mode"></i></a>');
     output.push('<a class="btn page-action no-text fa fa-arrows-alt" id="cwTimelineButtonsFit' + this.nodeID + '" title="' + $.i18n.prop("deDiagramOptionsButtonFitToScreen") + '"></a>');
     output.push('<a class="btn page-action no-text fa fa-download" id="cwTimelineButtonsDownload' + this.nodeID + '" title="' + $.i18n.prop("download") + '"></a>');
     output.push("</div>");
@@ -186,12 +194,20 @@
     }
   };
 
+  // Expert Mode Button Event
+  cwLayoutTimeline.prototype.enableExpertModeButtonEvent = function() {
+    var expertButton = document.getElementById("cwTimelineButtonsExpertMode" + this.nodeID);
+    if (expertButton) {
+      expertButton.addEventListener("click", this.manageExpertMode.bind(this));
+    }
+  };
+
   // Building network
   cwLayoutTimeline.prototype.createTimeline = function() {
     this.timelineGroups = new vis.DataSet();
     this.timelineItems = new vis.DataSet();
     this.simplify(this.JSONobjects, null);
-
+    this.enableExpertModeButtonEvent();
     var timeLineContainer = document.getElementById("cwLayoutTimeline_" + this.nodeID);
 
     // set height

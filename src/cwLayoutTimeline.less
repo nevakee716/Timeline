@@ -2,6 +2,11 @@
 @import "../../_variables";
 
 .cwLayoutTimelineButtons {
+  z-index: 100;
   position: absolute;
   margin-top: 3px;
+
+  .btn.page-action.selected {
+    background-color: lighten(@cwDiagramBreadCrumbBackgroundColor, 5%);
+  }
 }
