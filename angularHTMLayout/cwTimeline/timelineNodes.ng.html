@@ -1,0 +1,90 @@
+<div ng-controller="expertModeNodeConfig cw-diagram-popout-container" class="cw-visible view-container">
+  <div id="{{treeID}}" class="cwLayoutTimelineExpertModeNodesConfigTree"></div>
+
+  <div class="cwPropertiesTableHeader CwPropertiesLayoutTableHeader" ng-if="ng.nodeID === undefined && ng.selectedStep === undefined">Please Select a Node or a Step to Configure</div>
+  <div ng-if="ng.selectedNode !== undefined">
+    <div class="cwPropertiesTableHeader CwPropertiesLayoutTableHeader">Node Configuration</div>
+    <div class="cwPropertiesTableContainer">
+      <table class="cwPropertiesTable">
+        <tr>
+          <th>Node :</th>
+          <td class="cw-edit-property-value">{{ng.selectedNode.NodeName}}</td>
+        </tr>
+        <tr>
+          <th>Node ID :</th>
+          <td class="cw-edit-property-value">{{ng.selectedNode.NodeID}}</td>
+        </tr>
+        <tr>
+          <th>Complementary Node :</th>
+          <td class="cw-edit-property-value"><input class="cw-edit-attr" ng-model="ng.nodeConfig.isComplementaryNode" ng-change="updateTimeline()" type="checkbox" /></td>
+        </tr>
+        <tr>
+          <th>Hidden Node :</th>
+          <td class="cw-edit-property-value"><input class="cw-edit-attr" ng-model="ng.nodeConfig.isHidden" ng-change="updateTimeline()" type="checkbox" /></td>
+        </tr>
+        <tr>
+          <th>Is Lane :</th>
+          <td class="cw-edit-property-value"><input class="cw-edit-attr" ng-model="ng.nodeConfig.isLane" ng-change="updateTimeline()" type="checkbox" /></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div ng-if="ng.selectedStep !== undefined">
+    <div class="cwPropertiesTableHeader CwPropertiesLayoutTableHeader">Step Configuration</div>
+    <div class="cwPropertiesTableHeader cwPropertiesTableContainer">
+      <table class="cwPropertiesTable">
+        <tbody>
+          <tr>
+            <th>Custom Display String :</th>
+            <td class="cw-edit-property-value"><input class="cw-edit-attr" type="text" ng-change="updateTimeline()" ng-model="ng.stepConfig.cds" /></td>
+          </tr>
+          <tr class="cwLayout_expertModeTableSelect">
+            <th>Type :</th>
+            <td>
+              <select class="cw-edit-attr cw-edit-attr-combobox" ng-change="updateTimeline()" ng-model="ng.stepConfig.type">
+                <option value="range">Range</option>
+                <option value="point">Point</option>
+                <option value="box">Box</option>
+                <option value="background">Background</option>
+              </select>
+            </td>
+          </tr>
+          <tr class="cwLayout_expertModeTableSelect">
+            <th>Start Date Property :</th>
+            <td>
+              <select class="cw-edit-attr cw-edit-attr-combobox" ng-change="updateTimeline()" ng-model="ng.stepConfig.startProp">
+                <option ng-if="p.type==='Date'" value="{{sp}}" ng-selected="sp == ng.stepConfig.startProp" ng-repeat="(sp, p) in objectType.properties">{{p.name}}</option>
+              </select>
+            </td>
+          </tr>
+          <tr class="cwLayout_expertModeTableSelect">
+            <th>End Date Property :</th>
+            <td>
+              <select class="cw-edit-attr cw-edit-attr-combobox" ng-change="updateTimeline()" ng-model="ng.stepConfig.endProp">
+                <option ng-if="p.type==='Date'" value="{{sp}}" ng-selected="sp == ng.stepConfig.endProp" ng-repeat="(sp, p) in objectType.properties">{{p.name}}</option>
+              </select>
+            </td>
+          </tr>
+          <tr class="cwLayout_expertModeTableSelect">
+            <th>Text Color:</th>
+            <td class="cw-edit-property-value" style="width:25px">
+              <input ng-model="ng.stepConfig.textColor" ng-change="updateTimeline()" type="color" id="html5colorpicker" style="width:20px" />
+            </td>
+          </tr>
+          <tr class="cwLayout_expertModeTableSelect">
+            <th>Background Color:</th>
+            <td class="cw-edit-property-value" style="width:25px">
+              <input ng-model="ng.stepConfig.backgroundColor" ng-change="updateTimeline()" type="color" id="html5colorpicker" style="width:20px" />
+            </td>
+          </tr>
+          <tr class="cwLayout_expertModeTableSelect">
+            <th>Border Color:</th>
+            <td class="cw-edit-property-value" style="width:25px">
+              <input ng-model="ng.stepConfig.borderColor" ng-change="updateTimeline()" type="color" id="html5colorpicker" style="width:20px" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

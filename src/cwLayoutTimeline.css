@@ -32,3 +32,35 @@
 .cwLayoutTimelineButtons .btn.page-action.selected {
   background-color: #03b4e7;
 }
+.cwLayoutTimelineExpertModeConfig div.vis-configuration-wrapper {
+  width: 700px;
+}
+.cwLayoutTimelineExpertModeConfig div.cwLayoutTimelineExpertModeContainerTab {
+  display: flex;
+}
+.cwLayoutTimelineExpertModeConfig div.cwLayoutTimelineExpertModeTabs {
+  margin: 5px;
+  transition: box-shadow 0.3s;
+  color: rgba(0, 0, 0, 0.8);
+  display: block;
+  height: 48px;
+  line-height: 48px;
+  padding: 0 1rem;
+  box-shadow: inset 0 -2px #000000;
+  cursor: pointer;
+}
+.cwLayoutTimelineExpertModeConfig div.cwLayoutTimelineExpertModeTabs.selected {
+  box-shadow: inset 0 -2px #03a0ce;
+}
+.cwLayoutTimelineExpertModeConfig .cwLayout_expertModeTableSelect {
+  line-height: 0px;
+}
+.vis-item-content a {
+  color: inherit !important;
+}
+.vis-item {
+  border-color: inherit;
+}
+.vakata-context {
+  z-index: 10000;
+}

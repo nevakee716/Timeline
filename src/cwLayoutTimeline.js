@@ -28,7 +28,9 @@
           },
           projet_20027_523091472: {
             isLane: true,
-            steps: [{ start: "startdate", end: "enddate", cds: "coucou : {name}", type: "range" }],
+            steps: {
+              j1_12: { startProp: "startdate", endProp: "enddate", cds: "coucou : {name}", type: "range", text: "ss" },
+            },
           },
         },
       };
@@ -130,16 +132,29 @@
   cwLayoutTimeline.prototype.createTimelineItem = function(item, elem, group, config) {
     var self = this;
     if (config === undefined) return;
-    config.steps.forEach(function(step) {
-      let timelineItem = {};
-      timelineItem.id = "timeElement_" + elem.id;
-      timelineItem.group = group;
-      timelineItem.content = cwAPI.customLibs.utils.getCustomDisplayString(step.cds, item);
-      timelineItem.start = item.properties[step.start];
-      timelineItem.end = item.properties[step.end];
-      timelineItem.type = step.type;
-      self.timelineItems.add(timelineItem);
-    });
+    for (let step in config.steps) {
+      if (config.steps.hasOwnProperty(step) && config.steps[step].startProp) {
+        let timelineItem = {};
+        timelineItem.id = "timeElement_" + elem.id + "_" + step;
+        timelineItem.group = group;
+        timelineItem.content = cwAPI.customLibs.utils.getCustomDisplayString(config.steps[step].cds, item);
+        timelineItem.start = item.properties[config.steps[step].startProp];
+        timelineItem.end = item.properties[config.steps[step].endProp];
+        timelineItem.type = config.steps[step].type;
+        if (config.steps[step].textColor === undefined) {
+          config.steps[step].textColor = "#FFFFFF";
+        }
+        if (config.steps[step].backgroundColor === undefined) {
+          config.steps[step].backgroundColor = "#26276d";
+        }
+        if (config.steps[step].borderColor === undefined) {
+          config.steps[step].borderColor = "#26276d";
+        }
+        timelineItem.style = "color: " + config.steps[step].textColor + "; background-color: " + config.steps[step].backgroundColor + "; border-color: " + config.steps[step].borderColor + ";";
+
+        self.timelineItems.add(timelineItem);
+      }
+    }
   };
 
   // obligatoire appeler par le system
@@ -202,12 +217,32 @@
     }
   };
 
-  // Building network
+  cwLayoutTimeline.prototype.deleteCurrentTimeline = function() {
+    var timeLineContainer = document.getElementById("cwLayoutTimeline_" + this.nodeID);
+    timeLineContainer.innerHTML = "";
+  };
+
   cwLayoutTimeline.prototype.createTimeline = function() {
+    this.enableExpertModeButtonEvent();
+    this.getAndParseData();
+    this.createVisTimeline();
+  };
+
+  cwLayoutTimeline.prototype.updateTimeline = function() {
+    this.getAndParseData();
+    this.deleteCurrentTimeline();
+    this.createVisTimeline();
+  };
+
+  // Building network
+  cwLayoutTimeline.prototype.getAndParseData = function() {
     this.timelineGroups = new vis.DataSet();
     this.timelineItems = new vis.DataSet();
     this.simplify(this.JSONobjects, null);
-    this.enableExpertModeButtonEvent();
+  };
+
+  // Building network
+  cwLayoutTimeline.prototype.createVisTimeline = function() {
     var timeLineContainer = document.getElementById("cwLayoutTimeline_" + this.nodeID);
 
     // set height
