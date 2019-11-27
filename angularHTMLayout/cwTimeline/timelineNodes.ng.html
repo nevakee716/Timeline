@@ -53,7 +53,7 @@
             <th>Start Date Property :</th>
             <td>
               <select class="cw-edit-attr cw-edit-attr-combobox" ng-change="updateTimeline()" ng-model="ng.stepConfig.startProp">
-                <option ng-if="p.type==='Date'" value="{{sp}}" ng-selected="sp == ng.stepConfig.startProp" ng-repeat="(sp, p) in objectType.properties">{{p.name}}</option>
+                <option ng-if="p.type==='Date'" value="{{sp}}" ng-selected="sp == ng.stepConfig.startProp" ng-repeat="(sp, p) in objectType.properties">{{p.name}} ({{sp}})</option>
               </select>
             </td>
           </tr>
@@ -61,7 +61,7 @@
             <th>End Date Property :</th>
             <td>
               <select class="cw-edit-attr cw-edit-attr-combobox" ng-change="updateTimeline()" ng-model="ng.stepConfig.endProp">
-                <option ng-if="p.type==='Date'" value="{{sp}}" ng-selected="sp == ng.stepConfig.endProp" ng-repeat="(sp, p) in objectType.properties">{{p.name}}</option>
+                <option ng-if="p.type==='Date'" value="{{sp}}" ng-selected="sp == ng.stepConfig.endProp" ng-repeat="(sp, p) in objectType.properties">{{p.name}} ({{sp}})</option>
               </select>
             </td>
           </tr>
