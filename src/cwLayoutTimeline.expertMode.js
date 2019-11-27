@@ -43,7 +43,7 @@
   cwLayoutTimeline.prototype.createExpertModeElement = function() {
     var self = this;
     var tab = [];
-    var tabs = ["timelineNodes", "general"];
+    var tabs = ["timelineNodes"]; //, "general"];
     var expertModeConfig = document.createElement("div");
     expertModeConfig.className = "cwLayoutTimelineExpertModeConfig";
     expertModeConfig.id = "cwLayoutTimelineExpertModeConfig" + this.nodeID;
@@ -139,9 +139,6 @@
     };
 
     if (noLoop !== true) {
-      node.SortedChildren.forEach(function(n) {
-        node.children.push(self.nodeIDToFancyTree(self.viewSchema.NodesByID[n.NodeId]));
-      });
       if (this.config.nodes[node.NodeID] && this.config.nodes[node.NodeID].steps) {
         for (let s in this.config.nodes[node.NodeID].steps) {
           if (this.config.nodes[node.NodeID].steps.hasOwnProperty(s)) {
@@ -153,6 +150,9 @@
           }
         }
       }
+      node.SortedChildren.forEach(function(n) {
+        node.children.push(self.nodeIDToFancyTree(self.viewSchema.NodesByID[n.NodeId]));
+      });
     }
 
     return node;
@@ -228,6 +228,7 @@
           action: function(obj) {
             tree.delete_node($(node));
             delete $scope.config.nodes[node.original.NodeID].steps[node];
+            self.updateTimeline();
           },
         };
       }
@@ -241,6 +242,7 @@
             $scope.ng.selectedNode = data.node.original;
             $scope.ng.selectedStep = undefined;
             $scope.ng.nodeID = data.node.original.NodeID;
+            if ($scope.config.nodes[data.node.original.NodeID] === undefined) $scope.config.nodes[data.node.original.NodeID] = { steps: {} };
             $scope.ng.nodeConfig = $scope.config.nodes[data.node.original.NodeID];
             if ($scope.ng.nodeConfig === undefined) $scope.ng.nodeConfig = {};
             $scope.$apply();

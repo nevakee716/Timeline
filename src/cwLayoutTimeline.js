@@ -20,39 +20,8 @@
       this.config = JSON.parse(this.options.CustomOptions["configuration"]);
     } catch (e) {
       console.log(e);
-      this.config = {
-        nodes: {
-          project_356153175: {
-            isLane: true,
-            steps: [],
-          },
-          projet_20027_523091472: {
-            isLane: true,
-            steps: {
-              j1_12: { startProp: "startdate", endProp: "enddate", cds: "coucou : {name}", type: "range", text: "ss" },
-            },
-          },
-        },
-      };
+      this.config = { nodes: {}, stack: true };
     }
-
-    this.hiddenNodes = [];
-    this.externalFilters = [];
-    this.nodeFiltered = [];
-    this.popOut = [];
-    this.specificGroup = [];
-    this.directionList = [];
-    this.groupToSelectOnStart = [];
-    this.objects = {};
-    this.layoutsByNodeId = {};
-    this.init = true;
-    this.stack = this.options.CustomOptions["stack"];
-    if (this.stack === undefined) this.stack = false;
-    this.getOption("hidden-nodes", "hiddenNodes", ",");
-    this.getOption("merged-nodes", "mergedNodes", ",");
-    this.getOption("node-as-timeElement", "nodeAsTimeElement", ",");
-    this.getOption("complementaryNode", "complementaryNode", ",");
-    this.steps = JSON.parse(this.options.CustomOptions["steps"]);
   };
 
   cwLayoutTimeline.prototype.getOption = function(options, name, splitter) {
@@ -84,7 +53,7 @@
     }
   };
 
-  cwLayoutTimeline.prototype.simplify = function(child, father) {
+  cwLayoutTimeline.prototype.simplify = function(child, father, level) {
     var childrenArray = [];
     var filterArray = [];
     var filtersGroup = [];
@@ -96,21 +65,22 @@
     if (child && child.associations) {
       this.parseNode(child, function(nextChild, associationNode) {
         let config = self.config.nodes[nextChild.nodeID];
-        if (self.hiddenNodes.indexOf(associationNode) !== -1) {
+        if (config === undefined) config = {};
+        if (config.isHidden) {
           // jumpAndMerge when hidden
-          childrenArray = childrenArray.concat(self.simplify(nextChild, father));
+          childrenArray = childrenArray.concat(self.simplify(nextChild, father, level + 1));
         } else {
           // adding regular node
           element = {};
           element.content = self.getItemDisplayString(nextChild);
           element.sort = nextChild.name;
-
+          element.treeLevel = level;
           if (father) element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName + "_" + father.id;
           else element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName;
           element.objectTypeScriptName = nextChild.objectTypeScriptName;
           if (config && config.isLane === true) {
             element.group = father;
-            element.children = self.simplify(nextChild, element);
+            element.children = self.simplify(nextChild, element, level + 1);
             if (element.children.length > 0) {
               element.nestedGroups = [];
               for (var k = 0; k < element.children.length; k += 1) {
@@ -121,6 +91,7 @@
             childrenArray.push(element);
             self.createTimelineItem(nextChild, element, element.id, config);
           } else {
+            father.children = self.simplify(nextChild, father, level + 1);
             self.createTimelineItem(nextChild, element, father.id, config);
           }
         }
@@ -133,13 +104,23 @@
     var self = this;
     if (config === undefined) return;
     for (let step in config.steps) {
-      if (config.steps.hasOwnProperty(step) && config.steps[step].startProp) {
+      if (config.steps.hasOwnProperty(step) && config.steps[step].startProp && (config.steps[step].endProp || config.steps[step].type === "point" || config.steps[step].type === "box")) {
         let timelineItem = {};
         timelineItem.id = "timeElement_" + elem.id + "_" + step;
         timelineItem.group = group;
-        timelineItem.content = cwAPI.customLibs.utils.getCustomDisplayString(config.steps[step].cds, item);
+        if (config.steps[step].cds === "" || config.steps[step].cds == undefined) {
+          timelineItem.content = "";
+        } else {
+          timelineItem.content = cwAPI.customLibs.utils.getCustomDisplayString(config.steps[step].cds, item);
+        }
+
         timelineItem.start = item.properties[config.steps[step].startProp];
-        timelineItem.end = item.properties[config.steps[step].endProp];
+        if (config.steps[step].endProp) timelineItem.end = item.properties[config.steps[step].endProp];
+
+        if (config.steps[step].tooltip !== undefined && config.steps[step].tooltip !== "") {
+          timelineItem.title = cwAPI.customLibs.utils.getCustomDisplayString(config.steps[step].tooltip + "<@@><##>", item);
+        }
+
         timelineItem.type = config.steps[step].type;
         if (config.steps[step].textColor === undefined) {
           config.steps[step].textColor = "#FFFFFF";
@@ -170,11 +151,11 @@
     // keep the node of the layout
     assoNode[this.mmNode.NodeID] = object.associations[this.mmNode.NodeID];
     // complementary node
-    this.complementaryNode.forEach(function(nodeID) {
+    /*this.complementaryNode.forEach(function(nodeID) {
       if (object.associations[nodeID]) {
         assoNode[nodeID] = object.associations[nodeID];
       }
-    });
+    });*/
     cpyObj.nodeID = this.nodeID;
     cpyObj.associations = assoNode;
 
@@ -183,29 +164,27 @@
     if (cwApi.currentUser.PowerLevel === 1) output.push('<a class="btn page-action no-text fa fa-cogs" id="cwTimelineButtonsExpertMode' + this.nodeID + '" title="Expert mode"></i></a>');
     output.push('<a class="btn page-action no-text fa fa-arrows-alt" id="cwTimelineButtonsFit' + this.nodeID + '" title="' + $.i18n.prop("deDiagramOptionsButtonFitToScreen") + '"></a>');
     output.push('<a class="btn page-action no-text fa fa-download" id="cwTimelineButtonsDownload' + this.nodeID + '" title="' + $.i18n.prop("download") + '"></a>');
+    output.push('<a class="btn page-action no-text fa fa-cubes" id="cwTimelineButtonsStack' + this.nodeID + '" title="' + $.i18n.prop("stack") + '"></a>');
     output.push("</div>");
     output.push('<div class="cw-visible" id="cwLayoutTimeline_' + this.nodeID + '"></div>');
   };
 
   cwLayoutTimeline.prototype.applyJavaScript = function() {
-    if (this.init) {
-      this.init = false;
-      var self = this;
-      var libToLoad = [];
+    var self = this;
+    var libToLoad = [];
 
-      if (cwAPI.isDebugMode() === true) {
-        self.createTimeline();
-      } else {
-        libToLoad = ["modules/vis/vis.min.js"];
-        // AsyncLoad
-        cwApi.customLibs.aSyncLayoutLoader.loadUrls(libToLoad, function(error) {
-          if (error === null) {
-            self.createTimeline();
-          } else {
-            cwAPI.Log.Error(error);
-          }
-        });
-      }
+    if (cwAPI.isDebugMode() === true) {
+      self.createTimeline();
+    } else {
+      libToLoad = ["modules/vis/vis.min.js"];
+      // AsyncLoad
+      cwApi.customLibs.aSyncLayoutLoader.loadUrls(libToLoad, function(error) {
+        if (error === null) {
+          self.createTimeline();
+        } else {
+          cwAPI.Log.Error(error);
+        }
+      });
     }
   };
 
@@ -217,13 +196,65 @@
     }
   };
 
+  cwLayoutTimeline.prototype.enableStackButtonEvent = function() {
+    var stackButton = document.getElementById("cwTimelineButtonsStack" + this.nodeID);
+    if (stackButton) {
+      stackButton.addEventListener("click", this.manageStackButton.bind(this));
+    }
+  };
+
+  cwLayoutTimeline.prototype.enableFitButtonEvent = function() {
+    var stackButton = document.getElementById("cwTimelineButtonsFit" + this.nodeID);
+    var self = this;
+    if (stackButton) {
+      stackButton.addEventListener("click", function() {
+        self.timeLineUI.fit();
+      });
+    }
+  };
+
+  // manage Expert Mode
+  cwLayoutTimeline.prototype.manageStackButton = function(event) {
+    var self = this;
+    if (self.config.stack === true) {
+      self.config.stack = false;
+      event.target.title = $.i18n.prop("activate_stack_mode");
+      event.target.classList.remove("selected");
+      self.stackTimeline();
+    } else {
+      self.config.stack = true;
+      event.target.title = $.i18n.prop("deactivate_stack_mode");
+      event.target.classList.add("selected");
+      self.unStackTimeline();
+    }
+  };
+  cwLayoutTimeline.prototype.stackTimeline = function() {
+    let options = {
+      stack: this.config.stack,
+      stackSubgroups: this.config.stack,
+    };
+    this.timeLineUI.setOptions(options);
+  };
+
+  cwLayoutTimeline.prototype.unStackTimeline = function() {
+    let options = {
+      stack: this.config.stack,
+      stackSubgroups: this.config.stack,
+    };
+    this.timeLineUI.setOptions(options);
+  };
+
   cwLayoutTimeline.prototype.deleteCurrentTimeline = function() {
+    this.timeLineUI.destroy();
     var timeLineContainer = document.getElementById("cwLayoutTimeline_" + this.nodeID);
     timeLineContainer.innerHTML = "";
   };
 
   cwLayoutTimeline.prototype.createTimeline = function() {
     this.enableExpertModeButtonEvent();
+    this.enableStackButtonEvent();
+    this.enableFitButtonEvent();
+
     this.getAndParseData();
     this.createVisTimeline();
   };
@@ -238,7 +269,7 @@
   cwLayoutTimeline.prototype.getAndParseData = function() {
     this.timelineGroups = new vis.DataSet();
     this.timelineItems = new vis.DataSet();
-    this.simplify(this.JSONobjects, null);
+    this.simplify(this.JSONobjects, { id: this.nodeID }, 1);
   };
 
   // Building network
@@ -257,8 +288,8 @@
 
     var options = {
       groupOrder: "sort", // groupOrder can be a property name or a sorting function,
-      stack: this.stack,
-      stackSubgroups: this.stack,
+      stack: this.config.stack,
+      stackSubgroups: this.config.stack,
       orientation: "both",
       verticalScroll: true,
       maxHeight: canvaHeight,
@@ -278,41 +309,6 @@
       div.innerText = properties.time;
       timeBar.append(div);
     });
-  };
-
-  cwLayoutTimeline.prototype.lookForObjects = function(id, scriptname, child) {
-    var childrenArray = [];
-    var element;
-    var nextChild;
-    if (child.objectTypeScriptName === scriptname && child.object_id == id) {
-      return child;
-    }
-    for (var associationNode in child.associations) {
-      if (child.associations.hasOwnProperty(associationNode)) {
-        for (var i = 0; i < child.associations[associationNode].length; i += 1) {
-          nextChild = child.associations[associationNode][i];
-          element = this.lookForObjects(id, scriptname, nextChild);
-          if (element !== null) {
-            return element;
-          }
-        }
-      }
-    }
-    return null;
-  };
-
-  cwLayoutTimeline.prototype.openObjectPage = function(id, scriptname) {
-    var object = this.lookForObjects(id, scriptname, this.originalObject);
-    if (object) {
-      location.href = this.singleLinkMethod(scriptname, object);
-    }
-  };
-
-  cwLayoutTimeline.prototype.openPopOut = function(id, scriptname) {
-    var object = this.lookForObjects(id, scriptname, this.originalObject);
-    if (this.popOut[scriptname]) {
-      cwApi.cwDiagramPopoutHelper.openDiagramPopout(object, this.popOut[scriptname]);
-    }
   };
 
   cwApi.cwLayouts.cwLayoutTimeline = cwLayoutTimeline;
