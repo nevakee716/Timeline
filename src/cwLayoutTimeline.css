@@ -32,9 +32,6 @@
 .cwLayoutTimelineButtons .btn.page-action.selected {
   background-color: #03b4e7;
 }
-.cwLayoutTimelineExpertModeConfig div.vis-configuration-wrapper {
-  width: 700px;
-}
 .cwLayoutTimelineExpertModeConfig div.cwLayoutTimelineExpertModeContainerTab {
   display: flex;
 }
@@ -63,4 +60,7 @@
 }
 .vakata-context {
   z-index: 10000;
+}
+.popout {
+  min-height: 101%;
 }
