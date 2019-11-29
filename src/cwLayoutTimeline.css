@@ -52,6 +52,9 @@
 .cwLayoutTimelineExpertModeConfig .cwLayout_expertModeTableSelect {
   line-height: 0px;
 }
+.cwLayoutTimelineExpertModeConfig div.cwPropertiesTableContainer {
+  width: 99%;
+}
 .vis-item-content a {
   color: inherit !important;
 }
@@ -61,6 +64,6 @@
 .vakata-context {
   z-index: 10000;
 }
-.popout {
-  min-height: 101%;
+.jstree-icon.jstree-themeicon.fa.fa-cube {
+  color: #03a0ce;
 }
