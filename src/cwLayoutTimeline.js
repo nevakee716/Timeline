@@ -68,7 +68,7 @@
         if (config === undefined) config = {};
         if (config.isHidden) {
           // jumpAndMerge when hidden
-          childrenArray = childrenArray.concat(self.simplify(nextChild, father, level + 1));
+          childrenArray = childrenArray.concat(self.simplify(nextChild, father, level));
         } else {
           // adding regular node
           element = {};
@@ -92,7 +92,7 @@
             childrenArray.push(element);
             self.createTimelineItem(nextChild, element, element.id, config);
           } else {
-            father.children = self.simplify(nextChild, father, level + 1);
+            father.children = self.simplify(nextChild, father, level);
             self.createTimelineItem(nextChild, element, father.id, config);
           }
         }
@@ -115,8 +115,8 @@
           timelineItem.content = cwAPI.customLibs.utils.getCustomDisplayString(config.steps[step].cds, item);
         }
 
-        timelineItem.start = item.properties[config.steps[step].startProp];
-        if (config.steps[step].endProp) timelineItem.end = item.properties[config.steps[step].endProp];
+        timelineItem.start = new Date(item.properties[config.steps[step].startProp]);
+        if (config.steps[step].endProp) timelineItem.end = new Date(item.properties[config.steps[step].endProp]);
 
         if (config.steps[step].tooltip !== undefined && config.steps[step].tooltip !== "") {
           timelineItem.title = cwAPI.customLibs.utils.getCustomDisplayString(config.steps[step].tooltip + "<@@><##>", item);
@@ -278,8 +278,8 @@
 
     // set height
     var titleReact = document.querySelector("#cw-top-bar").getBoundingClientRect();
-    var topBarReact = document.querySelector(".page-top").getBoundingClientRect();
-    var canvaHeight = window.innerHeight - titleReact.height - topBarReact.height;
+    var topBarReact = 52; //document.querySelector(".page-top").getBoundingClientRect();
+    var canvaHeight = window.innerHeight - titleReact.height - topBarReact - 20;
 
     function customOrder(a, b) {
       // order by id
@@ -293,6 +293,11 @@
       orientation: "top",
       verticalScroll: true,
       maxHeight: canvaHeight,
+      margin: {
+        item: {
+          horizontal: 0,
+        },
+      },
     };
 
     if (this.stack == true) options.order = customOrder;
