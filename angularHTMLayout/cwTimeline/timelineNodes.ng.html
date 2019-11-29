@@ -1,5 +1,5 @@
 <div ng-controller="expertModeNodeConfig cw-diagram-popout-container" class="cw-visible view-container">
-  <div id="{{treeID}}" class="cwLayoutTimelineExpertModeNodesConfigTree"></div>
+  <div id="{{treeID}}" ng-init="loadtree()" class="cwLayoutTimelineExpertModeNodesConfigTree"></div>
 
   <div class="cwPropertiesTableHeader CwPropertiesLayoutTableHeader" ng-if="ng.nodeID === undefined && ng.selectedStep === undefined">Please Select a Node or a Step to Configure</div>
   <div ng-if="ng.selectedNode !== undefined">
@@ -25,6 +25,10 @@
         <tr>
           <th>Is Lane :</th>
           <td class="cw-edit-property-value"><input class="cw-edit-attr" ng-model="ng.nodeConfig.isLane" ng-change="updateTimeline()" type="checkbox" /></td>
+        </tr>
+        <tr>
+          <th>Collapsed By Default :</th>
+          <td class="cw-edit-property-value"><input class="cw-edit-attr" ng-model="ng.nodeConfig.isCollapse" ng-change="updateTimeline()" type="checkbox" /></td>
         </tr>
       </table>
     </div>

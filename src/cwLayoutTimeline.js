@@ -79,6 +79,7 @@
           else element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName;
           element.objectTypeScriptName = nextChild.objectTypeScriptName;
           if (config && config.isLane === true) {
+            if (config.isCollapse) element.showNested = false;
             element.group = father;
             element.children = self.simplify(nextChild, element, level + 1);
             if (element.children.length > 0) {
@@ -104,7 +105,7 @@
     var self = this;
     if (config === undefined) return;
     for (let step in config.steps) {
-      if (config.steps.hasOwnProperty(step) && config.steps[step].startProp && (config.steps[step].endProp || config.steps[step].type === "point" || config.steps[step].type === "box")) {
+      if (config.steps.hasOwnProperty(step) && config.steps[step].startProp && item.properties[config.steps[step].startProp] != "1899-12-30T00:00:00" && ((config.steps[step].endProp && item.properties[config.steps[step].endProp] != "1899-12-30T00:00:00") || config.steps[step].type === "point" || config.steps[step].type === "box")) {
         let timelineItem = {};
         timelineItem.id = "timeElement_" + elem.id + "_" + step;
         timelineItem.group = group;
@@ -138,32 +139,30 @@
     }
   };
 
+  cwLayoutTimeline.prototype.manageComplementaryNode = function() {
+    var assoNode = {};
+    // keep the node of the layout
+    assoNode[this.mmNode.NodeID] = this.originalObject.associations[this.mmNode.NodeID];
+    // complementary node
+    for (let associationNode in this.originalObject.associations) {
+      if (this.originalObject.associations.hasOwnProperty(associationNode) && this.config.nodes && this.config.nodes[associationNode] && this.config.nodes[associationNode].isComplementaryNode) {
+        assoNode[associationNode] = this.originalObject.associations[associationNode];
+      }
+    }
+    this.JSONobjects.associations = assoNode;
+  };
+
   // obligatoire appeler par le system
   cwLayoutTimeline.prototype.drawAssociations = function(output, associationTitleText, object) {
-    var cpyObj = $.extend({}, object);
-    var assoNode = {};
+    this.originalObject = object;
+    this.JSONobjects = $.extend({}, object);
+    this.JSONobjects.nodeID = this.nodeID;
+    this.manageComplementaryNode();
 
-    this.originalObject = $.extend({}, object);
-    var simplifyObject,
-      i,
-      assoNode = {},
-      isData = false;
-    // keep the node of the layout
-    assoNode[this.mmNode.NodeID] = object.associations[this.mmNode.NodeID];
-    // complementary node
-    /*this.complementaryNode.forEach(function(nodeID) {
-      if (object.associations[nodeID]) {
-        assoNode[nodeID] = object.associations[nodeID];
-      }
-    });*/
-    cpyObj.nodeID = this.nodeID;
-    cpyObj.associations = assoNode;
-
-    this.JSONobjects = cpyObj;
     output.push('<div class="cw-visible cwLayoutTimelineButtons" id="cwLayoutTimelineButtons_' + this.nodeID + '">');
     if (cwApi.currentUser.PowerLevel === 1) output.push('<a class="btn page-action no-text fa fa-cogs" id="cwTimelineButtonsExpertMode' + this.nodeID + '" title="Expert mode"></i></a>');
     output.push('<a class="btn page-action no-text fa fa-arrows-alt" id="cwTimelineButtonsFit' + this.nodeID + '" title="' + $.i18n.prop("deDiagramOptionsButtonFitToScreen") + '"></a>');
-    output.push('<a class="btn page-action no-text fa fa-download" id="cwTimelineButtonsDownload' + this.nodeID + '" title="' + $.i18n.prop("download") + '"></a>');
+    //output.push('<a class="btn page-action no-text fa fa-download" id="cwTimelineButtonsDownload' + this.nodeID + '" title="' + $.i18n.prop("download") + '"></a>');
     output.push('<a class="btn page-action no-text fa fa-cubes" id="cwTimelineButtonsStack' + this.nodeID + '" title="' + $.i18n.prop("stack") + '"></a>');
     output.push("</div>");
     output.push('<div class="cw-visible" id="cwLayoutTimeline_' + this.nodeID + '"></div>');
@@ -260,6 +259,7 @@
   };
 
   cwLayoutTimeline.prototype.updateTimeline = function() {
+    this.manageComplementaryNode();
     this.getAndParseData();
     this.deleteCurrentTimeline();
     this.createVisTimeline();
@@ -290,7 +290,7 @@
       groupOrder: "sort", // groupOrder can be a property name or a sorting function,
       stack: this.config.stack,
       stackSubgroups: this.config.stack,
-      orientation: "both",
+      orientation: "top",
       verticalScroll: true,
       maxHeight: canvaHeight,
     };
