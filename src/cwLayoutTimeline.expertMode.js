@@ -145,6 +145,8 @@
     exportNode.text = node.NodeName;
     exportNode.NodeID = node.NodeID;
     exportNode.children = [];
+    exportNode.objectTypeScriptName = node.ObjectTypeScriptName;
+    exportNode.SortedChildren = node.SortedChildren;
     exportNode.state = {
       opened: true,
     };
@@ -223,7 +225,7 @@
             label: "Create Step",
             icon: "fa fa-plus",
             action: function(questo) {
-              let newNodeID = tree.create_node(node, { text: "New Step", type: "file", NodeID: node.original.NodeID, objectTypeScriptName: node.original.ObjectTypeScriptName }, node.children.length - node.original.SortedChildren.length);
+              let newNodeID = tree.create_node(node, { text: "Step", type: "file", NodeID: node.original.NodeID, objectTypeScriptName: node.original.objectTypeScriptName }, node.children.length - node.original.SortedChildren.length);
               if ($scope.config.nodes[node.original.NodeID] === undefined) $scope.config.nodes[node.original.NodeID] = { steps: {} };
               $scope.config.nodes[node.original.NodeID].steps[newNodeID] = { cds: "{name}" };
             },
@@ -281,7 +283,7 @@
               valid_children: ["file"],
             },
             file: {
-              icon: "https://www.pokebip.com/pokedex-images/artworks/1.png",
+              icon: "fa fa-cube",
               valid_children: [],
             },
           },
