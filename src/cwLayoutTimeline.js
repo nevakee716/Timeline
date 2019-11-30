@@ -75,6 +75,9 @@
           element.content = self.getItemDisplayString(nextChild);
           element.sort = nextChild.name;
           element.treeLevel = level;
+          element.steps = [];
+          element.childrenSteps = [];
+          element.children = [];
           if (father) element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName + "_" + father.id;
           else element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName;
           element.objectTypeScriptName = nextChild.objectTypeScriptName;
@@ -89,11 +92,12 @@
               }
             }
             self.timelineGroups.add(element);
-            childrenArray.push(element);
             self.createTimelineItem(nextChild, element, element.id, config);
+            childrenArray.push(element);
           } else {
-            father.children = self.simplify(nextChild, father, level);
+            //father.children = self.simplify(nextChild, father, level);
             self.createTimelineItem(nextChild, element, father.id, config);
+            father.childrenSteps = father.childrenSteps.concat(element.steps);
           }
         }
       });
@@ -114,10 +118,24 @@
         } else {
           timelineItem.content = cwAPI.customLibs.utils.getCustomDisplayString(config.steps[step].cds, item);
         }
-
+        timelineItem.cid = step;
         timelineItem.start = new Date(item.properties[config.steps[step].startProp]);
-        if (config.steps[step].endProp) timelineItem.end = new Date(item.properties[config.steps[step].endProp]);
-
+        if (config.steps[step].endProp) {
+          timelineItem.end = new Date(item.properties[config.steps[step].endProp]);
+          let max = timelineItem.end;
+          if (config.steps[step].extendEndDate) {
+            //endate need to be check depend of childrenStep and step of children
+            elem.children.forEach(function(c) {
+              c.steps.forEach(function(s) {
+                if (s.end > max && config.steps[step].extendEndDateSteps.indexOf(s.cid) !== -1) max = s.end;
+              });
+            });
+            elem.childrenSteps.forEach(function(s) {
+              if (s.end > max && config.steps[step].extendEndDateSteps.indexOf(s.cid) !== -1) max = s.end;
+            });
+            timelineItem.end = max;
+          }
+        }
         if (config.steps[step].tooltip !== undefined && config.steps[step].tooltip !== "") {
           timelineItem.title = cwAPI.customLibs.utils.getCustomDisplayString(config.steps[step].tooltip + "<@@><##>", item);
         }
@@ -133,7 +151,7 @@
           config.steps[step].borderColor = "#26276d";
         }
         timelineItem.style = "color: " + config.steps[step].textColor + "; background-color: " + config.steps[step].backgroundColor + "; border-color: " + config.steps[step].borderColor + ";";
-
+        elem.steps.push(timelineItem);
         self.timelineItems.add(timelineItem);
       }
     }

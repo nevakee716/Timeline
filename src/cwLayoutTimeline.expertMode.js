@@ -106,6 +106,11 @@
         if (i === -1) c.push(e);
         else c.splice(i, 1);
       };
+      $scope.isSelected = function(c, e) {
+        var i = c.indexOf(e);
+        if (i === -1) return "";
+        else return "selected";
+      };
 
       if (self["controller_" + t.id] && $scope.config) self["controller_" + t.id]($container, templatePath, $scope);
     });
@@ -155,7 +160,7 @@
       if (this.config.nodes[node.NodeID] && this.config.nodes[node.NodeID].steps) {
         for (let s in this.config.nodes[node.NodeID].steps) {
           if (this.config.nodes[node.NodeID].steps.hasOwnProperty(s)) {
-            let c = this.stepToFancyTree(this.config.nodes[node.NodeID].steps[s], s);
+            let c = this.stepToFancyTree(this.config.nodes[node.NodeID].steps[s], s, node);
             c.objectTypeScriptName = node.ObjectTypeScriptName;
             c.NodeID = node.NodeID;
 
@@ -171,9 +176,10 @@
     return exportNode;
   };
 
-  cwLayoutTimeline.prototype.stepToFancyTree = function(step, id) {
+  cwLayoutTimeline.prototype.stepToFancyTree = function(step, id, parentNode) {
     let node = {};
     node.id = id;
+    node.parent = parentNode.NodeName;
     node.text = step.text;
     node.type = "file";
     node.state = {
@@ -225,7 +231,7 @@
             label: "Create Step",
             icon: "fa fa-plus",
             action: function(questo) {
-              let newNodeID = tree.create_node(node, { text: "Step", type: "file", NodeID: node.original.NodeID, objectTypeScriptName: node.original.objectTypeScriptName }, node.children.length - node.original.SortedChildren.length);
+              let newNodeID = tree.create_node(node, { text: "Step", parent: "node.original.NodeName", type: "file", NodeID: node.original.NodeID, objectTypeScriptName: node.original.objectTypeScriptName }, node.children.length - node.original.SortedChildren.length);
               if ($scope.config.nodes[node.original.NodeID] === undefined) $scope.config.nodes[node.original.NodeID] = { steps: {} };
               $scope.config.nodes[node.original.NodeID].steps[newNodeID] = { cds: "{name}" };
             },
@@ -267,6 +273,17 @@
               $scope.ng.selectedNode = undefined;
               $scope.ng.selectedStep = data.node.original;
               $scope.ng.stepConfig = $scope.config.nodes[data.node.original.NodeID].steps[data.node.id];
+              if ($scope.ng.stepConfig.extendEndDateSteps === undefined) $scope.ng.stepConfig.extendEndDateSteps = [];
+              $scope.childStepAvailable = [];
+              let tree = $("#" + $scope.treeID).jstree(true);
+              let parent = tree.get_node(data.node.parent);
+              parent.children_d.forEach(function(cId) {
+                if (cId == data.node.id) return;
+                let c = tree.get_node(cId);
+                if (c.type === "file") {
+                  $scope.childStepAvailable.push(c);
+                }
+              });
               $scope.ng.stepConfig.text = data.node.text;
               $scope.objectType = cwAPI.mm.getObjectType(data.node.original.objectTypeScriptName);
               $scope.$apply();

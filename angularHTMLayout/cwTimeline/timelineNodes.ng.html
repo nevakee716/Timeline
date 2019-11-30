@@ -7,10 +7,6 @@
     <div class="cwPropertiesTableContainer">
       <table class="cwPropertiesTable">
         <tr>
-          <th>Node :</th>
-          <td class="cw-edit-property-value">{{ng.selectedNode.NodeName}}</td>
-        </tr>
-        <tr>
           <th>Node ID :</th>
           <td class="cw-edit-property-value">{{ng.selectedNode.NodeID}}</td>
         </tr>
@@ -71,6 +67,18 @@
               <select class="cw-edit-attr cw-edit-attr-combobox" ng-change="updateTimeline()" ng-model="ng.stepConfig.endProp">
                 <option ng-if="p.type==='Date'" value="{{sp}}" ng-selected="sp == ng.stepConfig.endProp" ng-repeat="(sp, p) in objectType.properties">{{p.name}} ({{sp}})</option>
               </select>
+            </td>
+          </tr>
+          <tr class="cwLayout_expertModeTableSelect">
+            <th>Extend End Date :</th>
+            <td class="cw-edit-property-value"><input class="cw-edit-attr" ng-model="ng.stepConfig.extendEndDate" ng-change="updateTimeline()" type="checkbox" /></td>
+          </tr>
+          <tr ng-if="ng.stepConfig.extendEndDate">
+            <th>Children Steps :</th>
+            <td class="expertmode_table-buttonlist">
+              <div ng-click="updateTimeline()" ng-repeat="c in childStepAvailable | orderBy:'name'">
+                <a class="bootstrap-iso btn-add-filter btn page-action" ng-class="isSelected(ng.stepConfig.extendEndDateSteps,c.id)" ng-click="toggleArray(ng.stepConfig.extendEndDateSteps,c.id)">{{c.text}} ( {{c.original.parent}})</a>
+              </div>
             </td>
           </tr>
           <tr class="cwLayout_expertModeTableSelect">

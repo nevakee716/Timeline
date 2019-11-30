@@ -55,6 +55,39 @@
 .cwLayoutTimelineExpertModeConfig div.cwPropertiesTableContainer {
   width: 99%;
 }
+.cwLayoutTimelineExpertModeConfig div.cwPropertiesTableContainer td.expertmode_table-buttonlist {
+  white-space: inherit;
+}
+.cwLayoutTimelineExpertModeConfig div.cwPropertiesTableContainer td.expertmode_table-buttonlist div {
+  white-space: inherit;
+  padding-bottom: 2px;
+}
+.cwLayoutTimelineExpertModeConfig div.cwPropertiesTableContainer td.expertmode_table-buttonlist div a {
+  width: auto;
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: inherit;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+.cwLayoutTimelineExpertModeConfig div.cwPropertiesTableContainer td.expertmode_table-buttonlist div a.selected {
+  background-color: #03b4e7;
+  border-color: #546e7a;
+}
 .vis-item-content a {
   color: inherit !important;
 }
