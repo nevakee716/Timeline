@@ -1,0 +1,6 @@
+﻿activate_expert_mode = Activer le Mode Expert
+deactivate_expert_mode = Déactiver le Mode Expert
+expert_mode = Mode Expert
+download = Télécharger l''analyse en tant qu''image
+stack = Empilés
+timelineNodes = Node Configuration
