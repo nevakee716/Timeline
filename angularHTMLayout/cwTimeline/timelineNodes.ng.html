@@ -65,10 +65,23 @@
             <th>End Date Property :</th>
             <td>
               <select class="cw-edit-attr cw-edit-attr-combobox" ng-change="updateTimeline()" ng-model="ng.stepConfig.endProp">
-                <option ng-if="p.type==='Date'" value="{{sp}}" ng-selected="sp == ng.stepConfig.endProp" ng-repeat="(sp, p) in objectType.properties">{{p.name}} ({{sp}})</option>
+                <optgroup label="Properties">
+                  <option ng-if="p.type==='Date'" value="{{sp}}" ng-selected="sp == ng.stepConfig.endProp" ng-repeat="(sp, p) in objectType.properties">{{p.name}} ({{sp}})</option>
+                </optgroup>
               </select>
             </td>
           </tr>
+          <tr ng-if="ng.stepConfig.endProp" class="cwLayout_expertModeTableSelect">
+            <th>Select Value for Empty Date :</th>
+            <td>
+              <select class="cw-edit-attr cw-edit-attr-combobox" ng-change="updateTimeline()" ng-model="ng.stepConfig.endPropEmptyValue">
+                <option value="noValue">Do Not Display</option>
+                <option value="today">Today</option>
+                <option value="today5y">Today + 5 Years</option>
+              </select>
+            </td>
+          </tr>
+
           <tr ng-if="childStepAvailable && childStepAvailable.length > 0" class="cwLayout_expertModeTableSelect">
             <th>Extend End Date :</th>
             <td class="cw-edit-property-value"><input class="cw-edit-attr" ng-model="ng.stepConfig.extendEndDate" ng-change="updateTimeline()" type="checkbox" /></td>

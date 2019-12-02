@@ -105,12 +105,34 @@
     return childrenArray;
   };
 
+  cwLayoutTimeline.prototype.getEndDate = function(config, item, elem) {
+    if (item.properties[config.endProp] == "1899-12-30T00:00:00") {
+      if (config.endPropEmptyValue === "today") return new Date();
+      else if (config.endPropEmptyValue === "today5y") return new Date(new Date().setFullYear(new Date().getFullYear() + 5));
+      else return null;
+    }
+    let max = new Date(item.properties[config.endProp]);
+    if (config.extendEndDate) {
+      //endate need to be check depend of childrenStep and step of children
+      elem.children.forEach(function(c) {
+        c.steps.forEach(function(s) {
+          if (s.end > max && config.extendEndDateSteps.indexOf(s.cid) !== -1) max = s.end;
+        });
+      });
+      elem.childrenSteps.forEach(function(s) {
+        if (s.end > max && config.extendEndDateSteps.indexOf(s.cid) !== -1) max = s.end;
+      });
+    }
+    return max;
+  };
+
   cwLayoutTimeline.prototype.createTimelineItem = function(item, elem, group, config) {
     var self = this;
     if (config === undefined) return;
     for (let step in config.steps) {
-      if (config.steps.hasOwnProperty(step) && config.steps[step].startProp && item.properties[config.steps[step].startProp] != "1899-12-30T00:00:00" && ((config.steps[step].endProp && item.properties[config.steps[step].endProp] != "1899-12-30T00:00:00") || config.steps[step].type === "point" || config.steps[step].type === "box")) {
+      if (config.steps.hasOwnProperty(step) && config.steps[step].startProp && item.properties[config.steps[step].startProp] != "1899-12-30T00:00:00" && (config.steps[step].endProp || config.steps[step].type === "point" || config.steps[step].type === "box")) {
         let timelineItem = {};
+        let displayStep = true;
         timelineItem.id = "timeElement_" + elem.id + "_" + step;
         timelineItem.group = group;
         if (config.steps[step].cds === "" || config.steps[step].cds == undefined) {
@@ -121,21 +143,10 @@
         timelineItem.cid = step;
         timelineItem.start = new Date(item.properties[config.steps[step].startProp]);
         if (config.steps[step].endProp) {
-          timelineItem.end = new Date(item.properties[config.steps[step].endProp]);
-          let max = timelineItem.end;
-          if (config.steps[step].extendEndDate) {
-            //endate need to be check depend of childrenStep and step of children
-            elem.children.forEach(function(c) {
-              c.steps.forEach(function(s) {
-                if (s.end > max && config.steps[step].extendEndDateSteps.indexOf(s.cid) !== -1) max = s.end;
-              });
-            });
-            elem.childrenSteps.forEach(function(s) {
-              if (s.end > max && config.steps[step].extendEndDateSteps.indexOf(s.cid) !== -1) max = s.end;
-            });
-            timelineItem.end = max;
-          }
+          timelineItem.end = this.getEndDate(config.steps[step], item, elem);
+          if (timelineItem.end === null) displayStep = false;
         }
+
         if (config.steps[step].tooltip !== undefined && config.steps[step].tooltip !== "") {
           timelineItem.title = cwAPI.customLibs.utils.getCustomDisplayString(config.steps[step].tooltip + "<@@><##>", item);
         }
@@ -151,8 +162,10 @@
           config.steps[step].borderColor = "#26276d";
         }
         timelineItem.style = "color: " + config.steps[step].textColor + "; background-color: " + config.steps[step].backgroundColor + "; border-color: " + config.steps[step].borderColor + ";";
-        elem.steps.push(timelineItem);
-        self.timelineItems.add(timelineItem);
+        if (displayStep) {
+          elem.steps.push(timelineItem);
+          self.timelineItems.add(timelineItem);
+        }
       }
     }
   };
