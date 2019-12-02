@@ -91,13 +91,13 @@
                 element.nestedGroups.push(element.children[k].id);
               }
             }
-            self.timelineGroups.add(element);
+            if (self.timelineGroups.get(element.id) === null) self.timelineGroups.add(element);
             self.createTimelineItem(nextChild, element, element.id, config);
             childrenArray.push(element);
           } else {
             //father.children = self.simplify(nextChild, father, level);
             self.createTimelineItem(nextChild, element, father.id, config);
-            father.childrenSteps = father.childrenSteps.concat(element.steps);
+            if (father && father.childrenSteps) father.childrenSteps = father.childrenSteps.concat(element.steps);
           }
         }
       });
@@ -162,7 +162,7 @@
           config.steps[step].borderColor = "#26276d";
         }
         timelineItem.style = "color: " + config.steps[step].textColor + "; background-color: " + config.steps[step].backgroundColor + "; border-color: " + config.steps[step].borderColor + ";";
-        if (displayStep) {
+        if (displayStep && self.timelineItems.get(timelineItem.id) === null) {
           elem.steps.push(timelineItem);
           self.timelineItems.add(timelineItem);
         }

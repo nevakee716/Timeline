@@ -249,7 +249,7 @@
             icon: "fa fa-trash",
             action: function(obj) {
               tree.delete_node($(node));
-              delete $scope.config.nodes[node.original.NodeID].steps[node];
+              delete $scope.config.nodes[node.original.NodeID].steps[node.id];
               self.updateTimeline();
             },
           };
