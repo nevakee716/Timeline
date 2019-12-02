@@ -211,7 +211,7 @@
     if (cwAPI.isDebugMode() === true) {
       self.createTimeline();
     } else {
-      libToLoad = ["modules/vis/vis.min.js","modules/jsTree/jstree.min.js"]];
+      libToLoad = ["modules/vis/vis.min.js", "modules/jsTree/jstree.min.js"];
       // AsyncLoad
       cwApi.customLibs.aSyncLayoutLoader.loadUrls(libToLoad, function(error) {
         if (error === null) {
