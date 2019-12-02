@@ -134,5 +134,10 @@ after :
 
 You can choose the text, background, border of the time element
 
-## Save Configuration inside evolve
+## Save Configuration inside for evolve designer
 
+Once your finished your configuration, please click ok on the save tab
+<img src="https://raw.githubusercontent.com/nevakee716/Timeline/master/screen/18.jpg" alt="Drawing" style="width: 95%;"/>
+
+It will copy the configuration inside your clipboard, then paste it inside your page in evolve designer
+<img src="https://raw.githubusercontent.com/nevakee716/Timeline/master/screen/17.jpg" alt="Drawing" style="width: 95%;"/>
