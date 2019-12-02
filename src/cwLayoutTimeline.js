@@ -190,6 +190,11 @@
     this.JSONobjects.nodeID = this.nodeID;
     this.manageComplementaryNode();
 
+    if (cwApi.customLibs.utils === undefined || cwAPI.customLibs.utils.version === undefined || cwAPI.customLibs.utils.version < 1.8) {
+      output.push("<h2> Please Install Utils library 1.8 or higher</h2>");
+      return;
+    }
+
     output.push('<div class="cw-visible cwLayoutTimelineButtons" id="cwLayoutTimelineButtons_' + this.nodeID + '">');
     if (cwApi.currentUser.PowerLevel === 1) output.push('<a class="btn page-action no-text fa fa-cogs" id="cwTimelineButtonsExpertMode' + this.nodeID + '" title="Expert mode"></i></a>');
     output.push('<a class="btn page-action no-text fa fa-arrows-alt" id="cwTimelineButtonsFit' + this.nodeID + '" title="' + $.i18n.prop("deDiagramOptionsButtonFitToScreen") + '"></a>');
@@ -206,7 +211,7 @@
     if (cwAPI.isDebugMode() === true) {
       self.createTimeline();
     } else {
-      libToLoad = ["modules/vis/vis.min.js"];
+      libToLoad = ["modules/vis/vis.min.js","modules/jsTree/jstree.min.js"]];
       // AsyncLoad
       cwApi.customLibs.aSyncLayoutLoader.loadUrls(libToLoad, function(error) {
         if (error === null) {
