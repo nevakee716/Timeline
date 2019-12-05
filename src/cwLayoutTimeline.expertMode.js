@@ -311,6 +311,10 @@
           },
         });
     };
+
+    window.setTimeout(function() {
+      $scope.loadtree();
+    }, 800);
   };
 
   cwApi.cwLayouts.cwLayoutTimeline = cwLayoutTimeline;
