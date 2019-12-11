@@ -26,8 +26,8 @@
 /* MATRIX ADVANCED */
 .cwLayoutTimelineButtons {
   z-index: 100;
-  position: absolute;
   margin-top: -42px;
+  position: absolute;
 }
 .cwLayoutTimelineButtons .btn.page-action.selected {
   background-color: #03b4e7;
@@ -98,6 +98,17 @@
 .vakata-context {
   z-index: 10000;
 }
+.border {
+  position: absolute;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
 .jstree-icon.jstree-themeicon.fa.fa-cube {
   color: #03a0ce;
+}
+@media screen and (min-width: 1024px) {
+  body:not(.cw_print).main-menu-collapsed .page-content-wrap .page-top {
+    width: calc(60%);
+  }
 }
