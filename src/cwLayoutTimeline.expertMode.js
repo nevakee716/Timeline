@@ -58,6 +58,12 @@
     var expertModeContainer = document.createElement("div");
     expertModeContainer.className = "cwLayoutTimelineExpertModeContainer";
     expertModeContainer.id = "cwLayoutTimelineExpertModeContainer";
+
+    var treeContainer = document.createElement("div");
+    treeContainer.id = "cwLayoutTimelineExpertModeNodesConfigTree" + this.nodeID;
+    treeContainer.className = "cwLayoutTimelineExpertModeNodesConfigTree";
+
+    expertModeConfig.appendChild(treeContainer);
     expertModeConfig.appendChild(expertModeContainer);
 
     tabs.forEach(function(t) {
@@ -81,8 +87,12 @@
       loader = cwApi.CwAngularLoader;
     loader.setup();
 
+    let treeElem = document.getElementById("cwLayoutTimelineExpertModeNodesConfigTree" + this.nodeID);
     if (id === "saveconfiguration") {
       cwAPI.customLibs.utils.copyToClipboard(JSON.stringify(this.config));
+      treeElem.style.display = "none";
+    } else {
+      treeElem.style.display = "block";
     }
     let templatePath = cwAPI.getCommonContentPath() + "/html/cwTimeline/" + id + ".ng.html" + "?" + Math.random();
     this.unselectTabs();
@@ -261,10 +271,15 @@
         // onselect event
         .on("changed.jstree", function(e, data) {
           if (data.node && data.node.original) {
+            $scope.ng.nodeID = data.node.original.NodeID;
+            let node = self.viewSchema.NodesByID[$scope.ng.nodeID];
+            $scope.ng.PropertiesSelected = node.PropertiesSelected.map(function(n) {
+              return cwAPI.mm.getProperty(node.ObjectTypeScriptName, n);
+            });
             if (data.node.type === "default") {
               $scope.ng.selectedNode = data.node.original;
               $scope.ng.selectedStep = undefined;
-              $scope.ng.nodeID = data.node.original.NodeID;
+
               if ($scope.config.nodes[data.node.original.NodeID] === undefined) $scope.config.nodes[data.node.original.NodeID] = { steps: {} };
               $scope.ng.nodeConfig = $scope.config.nodes[data.node.original.NodeID];
               if ($scope.ng.nodeConfig === undefined) $scope.ng.nodeConfig = {};
@@ -311,10 +326,7 @@
           },
         });
     };
-
-    window.setTimeout(function() {
-      $scope.loadtree();
-    }, 800);
+    $scope.loadtree();
   };
 
   cwApi.cwLayouts.cwLayoutTimeline = cwLayoutTimeline;

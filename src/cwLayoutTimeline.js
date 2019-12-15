@@ -20,7 +20,16 @@
       this.config = JSON.parse(this.options.CustomOptions["configuration"]);
     } catch (e) {
       console.log(e);
-      this.config = { nodes: {}, stack: true };
+      this.config = {
+        nodes: {
+          project_356153175: { steps: {}, isLane: true },
+          projet_20027_2024145962: { steps: { j1_10: { cds: "{name}", extendEndDateSteps: [], text: "Step", type: "extbackground", startProp: "startdate", endProp: "enddate", textColor: "#008000", backgroundColor: "#8cff8c", borderColor: "#008000", backgroundTransparent: 100, tooltip: "{startdate} => {enddate}" } }, isLane: true },
+          projet_20027_688647401: { steps: { j1_11: { cds: "{name}", extendEndDateSteps: [], text: "Step", startProp: "startdate", type: "extbackground2", endProp: "enddate", textColor: "#9b0000", backgroundColor: "#ff8080", borderColor: "#710000", backgroundTransparent: 100, tooltip: "{startdate} => {enddate}" } }, isLane: true, specificLane: "Phase" },
+          projet_20027_1555324816: { steps: { j1_7: { cds: "{name}", extendEndDateSteps: [], text: "Step", type: "range", startProp: "startdate", endProp: "enddate", textColor: "#000080", backgroundColor: "#d2d3f0", borderColor: "#26276d", backgroundTransparent: 100, tooltip: "{startdate} => {enddate}" } }, isLane: false },
+          projet_20027_1070879759: { steps: { j1_9: { cds: "{name}", extendEndDateSteps: [], text: "Step", type: "range", startProp: "startdate", endProp: "enddate" } }, isLane: true },
+        },
+        stack: true,
+      };
     }
   };
 
@@ -78,25 +87,61 @@
           element.steps = [];
           element.childrenSteps = [];
           element.children = [];
+
           if (father) element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName + "_" + father.id;
           else element.id = nextChild.object_id + "_" + nextChild.objectTypeScriptName;
           element.objectTypeScriptName = nextChild.objectTypeScriptName;
+
           if (config && config.isLane === true) {
+            if (config.sortProp) element.sort = nextChild.properties[config.sortProp];
             if (config.isCollapse) element.showNested = false;
             element.group = father;
-            element.children = self.simplify(nextChild, element, level + 1);
+            if (config.specificLane === "" || config.specificLane === undefined) element.children = self.simplify(nextChild, element, level + 1);
             if (element.children.length > 0) {
               element.nestedGroups = [];
               for (var k = 0; k < element.children.length; k += 1) {
                 element.nestedGroups.push(element.children[k].id);
               }
             }
+
+            if (config && config.specificLane != "" && config.specificLane) {
+              var element2 = {};
+              element2.content = self.getItemDisplayString(nextChild);
+              element2.sort = nextChild.name;
+              element2.treeLevel = level + 1;
+              element2.steps = [];
+              element2.childrenSteps = [];
+              element2.children = [];
+              if (config.isCollapse) element2.showNested = false;
+              element2.id = element.id + "_" + config.specificLane;
+              element2.group = element.id;
+              element2.content = config.specificLane;
+              element2.children = self.simplify(nextChild, element2, level + 2);
+              if (element2.children.length > 0) {
+                element2.nestedGroups = [];
+                for (var k = 0; k < element2.children.length; k += 1) {
+                  element2.nestedGroups.push(element2.children[k].id);
+                }
+              }
+              if (element2.childrenSteps.length > 0) {
+                if (self.timelineGroups.get(element2.id) === null) self.timelineGroups.add(element2);
+
+                if (element.nestedGroups === undefined) element.nestedGroups = [];
+                element.nestedGroups.push(element2.id);
+              }
+            }
+
             if (self.timelineGroups.get(element.id) === null) self.timelineGroups.add(element);
-            self.createTimelineItem(nextChild, element, element.id, config);
+            self.createTimelineItem(nextChild, element, element.id, config, level);
             childrenArray.push(element);
           } else {
             //father.children = self.simplify(nextChild, father, level);
-            self.createTimelineItem(nextChild, element, father.id, config);
+            let arr = [];
+
+            self.createTimelineItem(nextChild, element, father.id, config, level);
+            arr = self.simplify(nextChild, father, level);
+
+            childrenArray = childrenArray.concat(arr);
             if (father && father.childrenSteps) father.childrenSteps = father.childrenSteps.concat(element.steps);
           }
         }
@@ -105,7 +150,7 @@
     return childrenArray;
   };
 
-  cwLayoutTimeline.prototype.getEndDate = function(config, item, elem) {
+  cwLayoutTimeline.prototype.getEndDate = function(config, item, elem, level) {
     if (item.properties[config.endProp] == "1899-12-30T00:00:00") {
       if (config.endPropEmptyValue === "today") return new Date();
       else if (config.endPropEmptyValue === "today5y") return new Date(new Date().setFullYear(new Date().getFullYear() + 5));
@@ -123,10 +168,11 @@
         if (s.end > max && config.extendEndDateSteps.indexOf(s.cid) !== -1) max = s.end;
       });
     }
+    if (this.maxDate === undefined || max > this.maxDate) this.maxDate = max;
     return max;
   };
 
-  cwLayoutTimeline.prototype.createTimelineItem = function(item, elem, group, config) {
+  cwLayoutTimeline.prototype.createTimelineItem = function(item, elem, group, config, level) {
     var self = this;
     if (config === undefined) return;
     for (let step in config.steps) {
@@ -142,6 +188,10 @@
         }
         timelineItem.cid = step;
         timelineItem.start = new Date(item.properties[config.steps[step].startProp]);
+        if (this.minDate === undefined || timelineItem.start < this.minDate) this.minDate = timelineItem.start;
+
+        if (config.steps[step].sortProp) timelineItem.sort = item.properties[config.sortProp];
+        else timelineItem.sort = timelineItem.start;
         if (config.steps[step].endProp) {
           timelineItem.end = this.getEndDate(config.steps[step], item, elem);
           if (timelineItem.end === null) displayStep = false;
@@ -151,7 +201,6 @@
           timelineItem.title = cwAPI.customLibs.utils.getCustomDisplayString(config.steps[step].tooltip + "<@@><##>", item);
         }
 
-        timelineItem.type = config.steps[step].type;
         if (config.steps[step].textColor === undefined) {
           config.steps[step].textColor = "#FFFFFF";
         }
@@ -161,7 +210,30 @@
         if (config.steps[step].borderColor === undefined) {
           config.steps[step].borderColor = "#26276d";
         }
-        timelineItem.style = "color: " + config.steps[step].textColor + "; background-color: " + config.steps[step].backgroundColor + "; border-color: " + config.steps[step].borderColor + ";";
+
+        if (config.steps[step].backgroundTransparent === undefined) {
+          config.steps[step].backgroundTransparent = 100;
+        }
+
+        let t = (config.steps[step].backgroundTransparent * 255) / 100;
+        t = t.toString(16);
+        if (t.length === 1) t = "0" + t;
+        let bColor = config.steps[step].backgroundColor + t;
+
+        timelineItem.style = "color: " + config.steps[step].textColor + "; background-color: " + bColor + "; border: solid 1px " + config.steps[step].borderColor + ";";
+
+        if (config.steps[step].type === "extbackground") {
+          timelineItem.type = "background";
+          timelineItem.className = "extbackground";
+          //timelineItem.style = "color: " + config.steps[step].textColor + "; background-color: " + bColor + "; border: solid 1px " + config.steps[step].borderColor + ";";
+          timelineItem.style = "color: " + config.steps[step].textColor + "; background-color: " + bColor + "; outline-offset : -1px; outline: solid 2px " + config.steps[step].borderColor + ";";
+        } else if (config.steps[step].type === "extbackground2") {
+          timelineItem.type = "background";
+          timelineItem.className = "extbackground";
+          timelineItem.style = "color: " + config.steps[step].textColor + "; background-color: " + bColor + "; border: solid 1px " + config.steps[step].borderColor + ";";
+          //timelineItem.style = "color: " + config.steps[step].textColor + "; background-color: " + bColor + "; outline-offset : -2px; outline: solid 2px " + config.steps[step].borderColor + ";";
+        } else timelineItem.type = config.steps[step].type;
+        timelineItem.className = timelineItem.className + " " + level;
         if (displayStep && self.timelineItems.get(timelineItem.id) === null) {
           elem.steps.push(timelineItem);
           self.timelineItems.add(timelineItem);
@@ -250,33 +322,29 @@
 
   // manage Expert Mode
   cwLayoutTimeline.prototype.manageStackButton = function(event) {
+    function customOrder(a, b) {
+      // order by id
+      return a.start - b.start;
+    }
+
     var self = this;
-    if (self.config.stack === true) {
-      self.config.stack = false;
+    let order = undefined;
+    if (self.config.stack === false) {
+      self.config.stack = true;
       event.target.title = $.i18n.prop("activate_stack_mode");
       event.target.classList.remove("selected");
-      self.stackTimeline();
     } else {
-      self.config.stack = true;
+      self.config.stack = false;
       event.target.title = $.i18n.prop("deactivate_stack_mode");
       event.target.classList.add("selected");
-      self.unStackTimeline();
     }
-  };
-  cwLayoutTimeline.prototype.stackTimeline = function() {
-    let options = {
+    this.updateTimeline();
+    /*  let options = {
+      //order: order,
       stack: this.config.stack,
       stackSubgroups: this.config.stack,
     };
-    this.timeLineUI.setOptions(options);
-  };
-
-  cwLayoutTimeline.prototype.unStackTimeline = function() {
-    let options = {
-      stack: this.config.stack,
-      stackSubgroups: this.config.stack,
-    };
-    this.timeLineUI.setOptions(options);
+    this.timeLineUI.setOptions(options);*/
   };
 
   cwLayoutTimeline.prototype.deleteCurrentTimeline = function() {
@@ -292,6 +360,11 @@
 
     this.getAndParseData();
     this.createVisTimeline();
+
+    var self = this;
+    $(window).resize(function() {
+      self.updateTimeline();
+    });
   };
 
   cwLayoutTimeline.prototype.updateTimeline = function() {
@@ -318,17 +391,20 @@
     var canvaHeight = window.innerHeight - titleReact.height - topBarReact - 20;
 
     function customOrder(a, b) {
-      // order by id
-      return b.start - a.start;
+      // order by start date
+      return a.start - b.start;
     }
 
     var options = {
       groupOrder: "sort", // groupOrder can be a property name or a sorting function,
       stack: this.config.stack,
       stackSubgroups: this.config.stack,
+      groupHeightMode: "fixed",
       orientation: "top",
       verticalScroll: true,
       maxHeight: canvaHeight,
+      start: this.minDate,
+      end: this.maxDate,
       margin: {
         item: {
           horizontal: 0,
@@ -336,8 +412,7 @@
       },
     };
 
-    if (this.stack == true) options.order = customOrder;
-
+    if (this.config.stack === true) options.order = customOrder;
     this.timeLineUI = new vis.Timeline(timeLineContainer, this.timelineItems, this.timelineGroups, options);
 
     // Set first time bar
@@ -350,7 +425,46 @@
       div.innerText = properties.time;
       timeBar.append(div);
     });
+
+    var self = this;
+    this.timeLineUI.on("changed", function() {
+      let results = document.querySelectorAll(".vis-content .vis-itemset div.vis-background div.vis-group");
+      let groupHeight = 0;
+      for (let i = 0; i < results.length; i++) {
+        let group = results[i];
+
+        let sb = group.querySelector(".extbackground");
+        if (sb && window.innerHeight > group.getBoundingClientRect().top) {
+          let s = sb.className.split(" ");
+          let level = parseInt(s[s.length - 1]);
+          let height = group.offsetHeight;
+          let maxLevel = level;
+          // checking the sublevel
+          for (let j = i + 1; j < results.length; j++) {
+            if (!results[j].querySelector(".vis-item")) {
+              let foreground = document.querySelectorAll(".vis-content .vis-itemset div.vis-foreground div.vis-group");
+              if (!foreground[j - 1].querySelector(".vis-item")) break;
+            }
+            let sb = results[j].querySelector(".extbackground");
+            if (sb) {
+              let l = sb.className.split(" ");
+              l = parseInt(l[l.length - 1]);
+              maxLevel = Math.max(maxLevel, l);
+              if (level >= l) break;
+            }
+            height = height + results[j].offsetHeight;
+          }
+          // only update if the height to not be stuck in a loop
+          height = height - 2 * (level - maxLevel + 1);
+          if (height != sb.offsetHeight) {
+            sb.style.height = height + "px";
+          }
+        }
+      }
+    });
   };
+
+  cwLayoutTimeline.prototype.findNextGroup = function() {};
 
   cwApi.cwLayouts.cwLayoutTimeline = cwLayoutTimeline;
 })(cwAPI, jQuery);
