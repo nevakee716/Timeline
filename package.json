@@ -1,6 +1,6 @@
 {
   "name": "Timeline",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Allow you to display DateProperty of your objects (and their associated objects) in a Timeline",
   "main": "src/Timeline.js",
   "scripts": {
