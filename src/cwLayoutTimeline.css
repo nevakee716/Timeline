@@ -1,3 +1,4 @@
+/* CUSTOM VARIABLES */
 /* GLOBAL */
 /* LOGIN */
 /* DIAGRAM */
@@ -11,6 +12,7 @@
 /* LIST BOX */
 /* PROPERTIES GROUP */
 /* BUTTONS */
+@cwbuttonselectedbackgroundcolor :darken (#ffffff, 5%);
 /* PAGE ACTIONS */
 /* ACCORDIONS */
 /* DISCUSSIONS */
@@ -21,12 +23,12 @@
 /* TASKS & NOTIFICATIONS */
 /* GLOBAL SEARCH */
 /* TOP BAR */
-/* GRID */
 /* DIAGRAM TILE */
 /* MATRIX ADVANCED */
+/* DIAGRAM OVERLAY */
 .cwLayoutTimelineButtons {
   z-index: 100;
-  margin-top: -42px;
+  margin-top: 3px;
   position: absolute;
 }
 .cwLayoutTimelineButtons .btn.page-action.selected {
@@ -109,6 +111,6 @@
 }
 @media screen and (min-width: 1024px) {
   body:not(.cw_print).main-menu-collapsed .page-content-wrap .page-top {
-    width: calc(60%);
+    width: calc(100% - 40px);
   }
 }
