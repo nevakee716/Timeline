@@ -1,5 +1,7 @@
 <div ng-controller="expertModeNodeConfig cw-diagram-popout-container" class="cw-visible view-container">
-  <div class="cwPropertiesTableHeader CwPropertiesLayoutTableHeader" ng-if="ng.nodeID === undefined && ng.selectedStep === undefined">Please Select a Node or a Step to Configure</div>
+  <div class="cwPropertiesTableHeader CwPropertiesLayoutTableHeader" ng-if="ng.nodeID === undefined && ng.selectedStep === undefined">
+    Please Select a Node or a Step to Configure
+  </div>
   <div ng-if="ng.selectedNode !== undefined">
     <div class="cwPropertiesTableHeader CwPropertiesLayoutTableHeader">Node Configuration</div>
     <div class="cwPropertiesTableContainer">
@@ -10,29 +12,76 @@
         </tr>
         <tr>
           <th>Complementary Node :</th>
-          <td class="cw-edit-property-value"><input class="cw-edit-attr" ng-model="ng.nodeConfig.isComplementaryNode" ng-change="updateTimeline()" type="checkbox" /></td>
+          <td class="cw-edit-property-value">
+            <input
+              class="cw-edit-attr"
+              ng-model-options="{ debounce: 200 }"
+              ng-model="ng.nodeConfig.isComplementaryNode"
+              ng-change="updateTimeline()"
+              type="checkbox"
+            />
+          </td>
         </tr>
         <tr>
           <th>Hidden Node :</th>
-          <td class="cw-edit-property-value"><input class="cw-edit-attr" ng-model="ng.nodeConfig.isHidden" ng-change="updateTimeline()" type="checkbox" /></td>
+          <td class="cw-edit-property-value">
+            <input
+              class="cw-edit-attr"
+              ng-model-options="{ debounce: 200 }"
+              ng-model="ng.nodeConfig.isHidden"
+              ng-change="updateTimeline()"
+              type="checkbox"
+            />
+          </td>
         </tr>
         <tr>
           <th>Is Lane :</th>
-          <td class="cw-edit-property-value"><input class="cw-edit-attr" ng-model="ng.nodeConfig.isLane" ng-change="updateTimeline()" type="checkbox" /></td>
+          <td class="cw-edit-property-value">
+            <input
+              class="cw-edit-attr"
+              ng-model-options="{ debounce: 200 }"
+              ng-model="ng.nodeConfig.isLane"
+              ng-change="updateTimeline()"
+              type="checkbox"
+            />
+          </td>
         </tr>
         <tr>
           <th>Collapsed By Default :</th>
-          <td class="cw-edit-property-value"><input class="cw-edit-attr" ng-model="ng.nodeConfig.isCollapse" ng-change="updateTimeline()" type="checkbox" /></td>
+          <td class="cw-edit-property-value">
+            <input
+              class="cw-edit-attr"
+              ng-model-options="{ debounce: 200 }"
+              ng-model="ng.nodeConfig.isCollapse"
+              ng-change="updateTimeline()"
+              type="checkbox"
+            />
+          </td>
         </tr>
         <tr ng-if="ng.nodeConfig.isLane">
           <th>Specific Lane :</th>
-          <td class="cw-edit-property-value"><input class="cw-edit-attr" ng-model="ng.nodeConfig.specificLane" ng-change="updateTimeline()" type="text" /></td>
+          <td class="cw-edit-property-value">
+            <input
+              class="cw-edit-attr"
+              ng-model-options="{ debounce: 1000 }"
+              ng-model="ng.nodeConfig.specificLane"
+              ng-change="updateTimeline()"
+              type="text"
+            />
+          </td>
         </tr>
         <tr ng-if="ng.nodeConfig.isLane" class="cwLayout_expertModeTableSelect">
           <th>Sort Property :</th>
           <td>
-            <select class="cw-edit-attr cw-edit-attr-combobox" ng-change="updateTimeline()" ng-model="ng.nodeConfig.sortProp">
-              <option value="{{p.scriptName}}" ng-selected="sp == ng.stepConfig.sortProp" ng-repeat="p in ng.PropertiesSelected">{{p.name}} ({{p.scriptName}})</option>
+            <select
+              class="cw-edit-attr cw-edit-attr-combobox"
+              ng-change="updateTimeline()"
+              ng-model-options="{ debounce: 200 }"
+              ng-model="ng.nodeConfig.sortProp"
+            >
+              <option value="{{p.scriptName}}" ng-selected="sp == ng.stepConfig.sortProp" ng-repeat="p in ng.PropertiesSelected"
+                >{{p.name}} ({{p.scriptName}})</option
+              >
             </select>
           </td>
         </tr>
@@ -46,16 +95,37 @@
         <tbody>
           <tr>
             <th>Custom Display String :</th>
-            <td class="cw-edit-property-value"><input class="cw-edit-attr" type="text" ng-change="updateTimeline()" ng-model="ng.stepConfig.cds" /></td>
+            <td class="cw-edit-property-value">
+              <input
+                class="cw-edit-attr"
+                type="text"
+                ng-change="updateTimeline()"
+                ng-model-options="{ debounce: 1000 }"
+                ng-model="ng.stepConfig.cds"
+              />
+            </td>
           </tr>
           <tr>
             <th>Tooltip :</th>
-            <td class="cw-edit-property-value"><input class="cw-edit-attr" type="text" ng-change="updateTimeline()" ng-model="ng.stepConfig.tooltip" /></td>
+            <td class="cw-edit-property-value">
+              <input
+                class="cw-edit-attr"
+                type="text"
+                ng-change="updateTimeline()"
+                ng-model-options="{ debounce: 1000 }"
+                ng-model="ng.stepConfig.tooltip"
+              />
+            </td>
           </tr>
           <tr class="cwLayout_expertModeTableSelect">
             <th>Type :</th>
             <td>
-              <select class="cw-edit-attr cw-edit-attr-combobox" ng-change="updateTimeline()" ng-model="ng.stepConfig.type">
+              <select
+                class="cw-edit-attr cw-edit-attr-combobox"
+                ng-change="updateTimeline()"
+                ng-model-options="{ debounce: 200 }"
+                ng-model="ng.stepConfig.type"
+              >
                 <option value="range">Range</option>
                 <option value="point">Point</option>
                 <option value="box">Box</option>
@@ -68,17 +138,42 @@
           <tr class="cwLayout_expertModeTableSelect">
             <th>Start Date Property :</th>
             <td>
-              <select class="cw-edit-attr cw-edit-attr-combobox" ng-change="updateTimeline()" ng-model="ng.stepConfig.startProp">
-                <option ng-if="p.type==='Date'" value="{{sp}}" ng-selected="sp == ng.stepConfig.startProp" ng-repeat="(sp, p) in objectType.properties">{{p.name}} ({{sp}})</option>
+              <select
+                class="cw-edit-attr cw-edit-attr-combobox"
+                ng-change="updateTimeline()"
+                ng-model-options="{ debounce: 200 }"
+                ng-model="ng.stepConfig.startProp"
+              >
+                <option
+                  ng-if="p.type==='Date'"
+                  value="{{sp}}"
+                  ng-selected="sp == ng.stepConfig.startProp"
+                  ng-repeat="(sp, p) in objectType.properties"
+                  >{{p.name}} ({{sp}})</option
+                >
               </select>
             </td>
           </tr>
-          <tr ng-if="ng.stepConfig.type === 'background' || ng.stepConfig.type === 'range' || ng.stepConfig.type === 'extbackground' || ng.stepConfig.type === 'extbackground2'" class="cwLayout_expertModeTableSelect">
+          <tr
+            ng-if="ng.stepConfig.type === 'background' || ng.stepConfig.type === 'range' || ng.stepConfig.type === 'extbackground' || ng.stepConfig.type === 'extbackground2'"
+            class="cwLayout_expertModeTableSelect"
+          >
             <th>End Date Property :</th>
             <td>
-              <select class="cw-edit-attr cw-edit-attr-combobox" ng-change="updateTimeline()" ng-model="ng.stepConfig.endProp">
+              <select
+                class="cw-edit-attr cw-edit-attr-combobox"
+                ng-change="updateTimeline()"
+                ng-model-options="{ debounce: 200 }"
+                ng-model="ng.stepConfig.endProp"
+              >
                 <optgroup label="Properties">
-                  <option ng-if="p.type==='Date'" value="{{sp}}" ng-selected="sp == ng.stepConfig.endProp" ng-repeat="(sp, p) in objectType.properties">{{p.name}} ({{sp}})</option>
+                  <option
+                    ng-if="p.type==='Date'"
+                    value="{{sp}}"
+                    ng-selected="sp == ng.stepConfig.endProp"
+                    ng-repeat="(sp, p) in objectType.properties"
+                    >{{p.name}} ({{sp}})</option
+                  >
                 </optgroup>
               </select>
             </td>
@@ -86,7 +181,12 @@
           <tr ng-if="ng.stepConfig.endProp" class="cwLayout_expertModeTableSelect">
             <th>Select Value for Empty Date :</th>
             <td>
-              <select class="cw-edit-attr cw-edit-attr-combobox" ng-change="updateTimeline()" ng-model="ng.stepConfig.endPropEmptyValue">
+              <select
+                class="cw-edit-attr cw-edit-attr-combobox"
+                ng-change="updateTimeline()"
+                ng-model-options="{ debounce: 200 }"
+                ng-model="ng.stepConfig.endPropEmptyValue"
+              >
                 <option value="noValue">Do Not Display</option>
                 <option value="today">Today</option>
                 <option value="today5y">Today + 5 Years</option>
@@ -96,39 +196,78 @@
 
           <tr ng-if="childStepAvailable && childStepAvailable.length > 0" class="cwLayout_expertModeTableSelect">
             <th>Extend End Date :</th>
-            <td class="cw-edit-property-value"><input class="cw-edit-attr" ng-model="ng.stepConfig.extendEndDate" ng-change="updateTimeline()" type="checkbox" /></td>
+            <td class="cw-edit-property-value">
+              <input
+                class="cw-edit-attr"
+                ng-model-options="{ debounce: 1000 }"
+                ng-model="ng.stepConfig.extendEndDate"
+                ng-change="updateTimeline()"
+                type="checkbox"
+              />
+            </td>
           </tr>
           <tr ng-if="ng.stepConfig.extendEndDate">
             <th>Children Steps :</th>
             <td class="expertmode_table-buttonlist">
               <div ng-click="updateTimeline()" ng-repeat="c in childStepAvailable | orderBy:'name'">
-                <a class="bootstrap-iso btn-add-filter btn page-action" ng-class="isSelected(ng.stepConfig.extendEndDateSteps,c.id)" ng-click="toggleArray(ng.stepConfig.extendEndDateSteps,c.id)">{{c.text}} ( {{c.original.parent}})</a>
+                <a
+                  class="bootstrap-iso btn-add-filter btn page-action"
+                  ng-class="isSelected(ng.stepConfig.extendEndDateSteps,c.id)"
+                  ng-click="toggleArray(ng.stepConfig.extendEndDateSteps,c.id)"
+                  >{{c.text}} ( {{c.original.parent}})</a
+                >
               </div>
             </td>
           </tr>
           <tr class="cwLayout_expertModeTableSelect">
             <th>Text Color:</th>
-            <td class="cw-edit-property-value" style="width:25px">
-              <input ng-model="ng.stepConfig.textColor" ng-change="updateTimeline()" type="color" id="html5colorpicker" style="width:20px" />
+            <td class="cw-edit-property-value" style="width: 25px;">
+              <input
+                ng-model-options="{ debounce: 1000 }"
+                ng-model="ng.stepConfig.textColor"
+                ng-change="updateTimeline()"
+                type="color"
+                id="html5colorpicker"
+                style="width: 20px;"
+              />
             </td>
           </tr>
           <tr class="cwLayout_expertModeTableSelect">
             <th>Background Color:</th>
-            <td class="cw-edit-property-value" style="width:25px">
-              <input ng-model="ng.stepConfig.backgroundColor" ng-change="updateTimeline()" type="color" id="html5colorpicker" style="width:20px" />
+            <td class="cw-edit-property-value" style="width: 25px;">
+              <input
+                ng-model-options="{ debounce: 1000 }"
+                ng-model="ng.stepConfig.backgroundColor"
+                ng-change="updateTimeline()"
+                type="color"
+                id="html5colorpicker"
+                style="width: 20px;"
+              />
             </td>
           </tr>
           <tr class="cwLayout_expertModeTableSelect">
             <th>Background Transparency (%):</th>
-            <td class="cw-edit-property-value" style="width:25px">
-              <input ng-model="ng.stepConfig.backgroundTransparent" ng-change="updateTimeline()" type="number" />
+            <td class="cw-edit-property-value" style="width: 25px;">
+              <input
+                ng-model-options="{ debounce: 1000 }"
+                ng-model="ng.stepConfig.backgroundTransparent"
+                ng-change="updateTimeline()"
+                type="number"
+              />
             </td>
           </tr>
           <tr class="cwLayout_expertModeTableSelect">
             <th ng-if="ng.stepConfig.type !== 'point'">Border Color:</th>
             <th ng-if="ng.stepConfig.type === 'point'">Dot Color:</th>
-            <td class="cw-edit-property-value" style="width:25px">
-              <input ng-model="ng.stepConfig.borderColor" ng-change="updateTimeline()" type="color" id="html5colorpicker" style="width:20px" />
+            <td class="cw-edit-property-value" style="width: 25px;">
+              <input
+                ng-model-options="{ debounce: 1000 }"
+                ng-model="ng.stepConfig.borderColor"
+                ng-change="updateTimeline()"
+                type="color"
+                id="html5colorpicker"
+                style="width: 20px;"
+              />
             </td>
           </tr>
         </tbody>

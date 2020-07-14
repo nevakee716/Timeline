@@ -6,8 +6,12 @@
   z-index: 100;
   margin-top: 3px;
   position: absolute;
+
+  .btn.page-action {
+    background-color: @cwColor1Shade;
+  }
   .btn.page-action.selected {
-    background-color: lighten(@cwDiagramBreadCrumbBackgroundColor, 5%);
+    background-color: @cwColor1;
   }
 }
 
@@ -71,6 +75,11 @@
   }
 }
 
+.vis-label {
+  a.undefined {
+    display: inline-flex;
+  }
+}
 .vis-item-content {
   a {
     color: inherit !important;

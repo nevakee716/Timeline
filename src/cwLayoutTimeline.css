@@ -12,7 +12,6 @@
 /* LIST BOX */
 /* PROPERTIES GROUP */
 /* BUTTONS */
-@cwbuttonselectedbackgroundcolor :darken (#ffffff, 5%);
 /* PAGE ACTIONS */
 /* ACCORDIONS */
 /* DISCUSSIONS */
@@ -31,8 +30,11 @@
   margin-top: 3px;
   position: absolute;
 }
+.cwLayoutTimelineButtons .btn.page-action {
+  background-color: #546e7a;
+}
 .cwLayoutTimelineButtons .btn.page-action.selected {
-  background-color: #03b4e7;
+  background-color: #03a0ce;
 }
 .cwLayoutTimelineExpertModeConfig div.cwLayoutTimelineExpertModeContainerTab {
   display: flex;
@@ -90,6 +92,9 @@
 .cwLayoutTimelineExpertModeConfig div.cwPropertiesTableContainer td.expertmode_table-buttonlist div a.selected {
   background-color: #03b4e7;
   border-color: #546e7a;
+}
+.vis-label a.undefined {
+  display: inline-flex;
 }
 .vis-item-content a {
   color: inherit !important;
