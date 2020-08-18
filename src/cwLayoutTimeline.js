@@ -1,13 +1,13 @@
 /* Copyright (c) 2012-2013 Casewise Systems Ltd (UK) - All rights reserved */
 
 /*global cwAPI, jQuery */
-(function(cwApi, $) {
+(function (cwApi, $) {
   "use strict";
   if (cwApi && cwApi.cwLayouts && cwApi.cwLayouts.cwLayoutTimeline) {
     var cwLayoutTimeline = cwApi.cwLayouts.cwLayoutTimeline;
   } else {
     // constructor
-    var cwLayoutTimeline = function(options, viewSchema) {
+    var cwLayoutTimeline = function (options, viewSchema) {
       cwApi.extend(this, cwApi.cwLayouts.CwLayout, options, viewSchema); // heritage
       this.viewSchema = viewSchema;
       cwApi.registerLayoutForJSActions(this); // execute le applyJavaScript après drawAssociations
@@ -15,25 +15,15 @@
     };
   }
 
-  cwLayoutTimeline.prototype.construct = function(options) {
+  cwLayoutTimeline.prototype.construct = function (options) {
     try {
       this.config = JSON.parse(this.options.CustomOptions["configuration"]);
     } catch (e) {
       console.log(e);
-      this.config = {
-        nodes: {
-          project_356153175: { steps: {}, isLane: true },
-          projet_20027_2024145962: { steps: { j1_10: { cds: "{name}", extendEndDateSteps: [], text: "Step", type: "extbackground", startProp: "startdate", endProp: "enddate", textColor: "#008000", backgroundColor: "#8cff8c", borderColor: "#008000", backgroundTransparent: 100, tooltip: "{startdate} => {enddate}" } }, isLane: true },
-          projet_20027_688647401: { steps: { j1_11: { cds: "{name}", extendEndDateSteps: [], text: "Step", startProp: "startdate", type: "extbackground2", endProp: "enddate", textColor: "#9b0000", backgroundColor: "#ff8080", borderColor: "#710000", backgroundTransparent: 100, tooltip: "{startdate} => {enddate}" } }, isLane: true, specificLane: "Phase" },
-          projet_20027_1555324816: { steps: { j1_7: { cds: "{name}", extendEndDateSteps: [], text: "Step", type: "range", startProp: "startdate", endProp: "enddate", textColor: "#000080", backgroundColor: "#d2d3f0", borderColor: "#26276d", backgroundTransparent: 100, tooltip: "{startdate} => {enddate}" } }, isLane: false },
-          projet_20027_1070879759: { steps: { j1_9: { cds: "{name}", extendEndDateSteps: [], text: "Step", type: "range", startProp: "startdate", endProp: "enddate" } }, isLane: true },
-        },
-        stack: true,
-      };
     }
   };
 
-  cwLayoutTimeline.prototype.getOption = function(options, name, splitter) {
+  cwLayoutTimeline.prototype.getOption = function (options, name, splitter) {
     options = this.options.CustomOptions[options];
     this[name] = [];
     if (options) {
@@ -47,11 +37,11 @@
     }
   };
 
-  cwLayoutTimeline.prototype.getItemDisplayString = function(item) {
+  cwLayoutTimeline.prototype.getItemDisplayString = function (item) {
     return cwAPI.customLibs.utils.getItemDisplayString(this.viewSchema.ViewName, item);
   };
 
-  cwLayoutTimeline.prototype.parseNode = function(child, callback) {
+  cwLayoutTimeline.prototype.parseNode = function (child, callback) {
     for (var associationNode in child.associations) {
       if (child.associations.hasOwnProperty(associationNode)) {
         for (var i = 0; i < child.associations[associationNode].length; i += 1) {
@@ -62,7 +52,7 @@
     }
   };
 
-  cwLayoutTimeline.prototype.simplify = function(child, father, level) {
+  cwLayoutTimeline.prototype.simplify = function (child, father, level) {
     var childrenArray = [];
     var filterArray = [];
     var filtersGroup = [];
@@ -72,7 +62,7 @@
     var self = this;
 
     if (child && child.associations) {
-      this.parseNode(child, function(nextChild, associationNode) {
+      this.parseNode(child, function (nextChild, associationNode) {
         let config = self.config.nodes[nextChild.nodeID];
         if (config === undefined) config = {};
         if (config.isHidden) {
@@ -150,7 +140,7 @@
     return childrenArray;
   };
 
-  cwLayoutTimeline.prototype.getEndDate = function(config, item, elem, level) {
+  cwLayoutTimeline.prototype.getEndDate = function (config, item, elem, level) {
     if (item.properties[config.endProp] == "1899-12-30T00:00:00") {
       if (config.endPropEmptyValue === "today") return new Date();
       else if (config.endPropEmptyValue === "today5y") return new Date(new Date().setFullYear(new Date().getFullYear() + 5));
@@ -159,12 +149,12 @@
     let max = new Date(item.properties[config.endProp]);
     if (config.extendEndDate) {
       //endate need to be check depend of childrenStep and step of children
-      elem.children.forEach(function(c) {
-        c.steps.forEach(function(s) {
+      elem.children.forEach(function (c) {
+        c.steps.forEach(function (s) {
           if (s.end > max && config.extendEndDateSteps.indexOf(s.cid) !== -1) max = s.end;
         });
       });
-      elem.childrenSteps.forEach(function(s) {
+      elem.childrenSteps.forEach(function (s) {
         if (s.end > max && config.extendEndDateSteps.indexOf(s.cid) !== -1) max = s.end;
       });
     }
@@ -172,11 +162,16 @@
     return max;
   };
 
-  cwLayoutTimeline.prototype.createTimelineItem = function(item, elem, group, config, level) {
+  cwLayoutTimeline.prototype.createTimelineItem = function (item, elem, group, config, level) {
     var self = this;
     if (config === undefined) return;
     for (let step in config.steps) {
-      if (config.steps.hasOwnProperty(step) && config.steps[step].startProp && item.properties[config.steps[step].startProp] != "1899-12-30T00:00:00" && (config.steps[step].endProp || config.steps[step].type === "point" || config.steps[step].type === "box")) {
+      if (
+        config.steps.hasOwnProperty(step) &&
+        config.steps[step].startProp &&
+        item.properties[config.steps[step].startProp] != "1899-12-30T00:00:00" &&
+        (config.steps[step].endProp || config.steps[step].type === "point" || config.steps[step].type === "box")
+      ) {
         let timelineItem = {};
         let displayStep = true;
         timelineItem.id = "timeElement_" + elem.id + "_" + step;
@@ -201,6 +196,44 @@
           timelineItem.title = cwAPI.customLibs.utils.getCustomDisplayString(config.steps[step].tooltip + "<@@><##>", item);
         }
 
+        // set colours
+
+        if (
+          config.steps[step].enableColorMapping &&
+          cwApi.customLibs &&
+          cwApi.customLibs.utils &&
+          cwApi.customLibs.utils.getCustomLayoutConfiguration
+        ) {
+          let CLCconfig = cwApi.customLibs.utils.getCustomLayoutConfiguration("property");
+          if (
+            CLCconfig.hasOwnProperty(item.objectTypeScriptName) &&
+            CLCconfig[item.objectTypeScriptName].hasOwnProperty(config.steps[step].colorMapProp)
+          ) {
+            CLCconfig = CLCconfig[item.objectTypeScriptName][config.steps[step].colorMapProp];
+            if (CLCconfig.hasOwnProperty(item.properties[config.steps[step].colorMapProp + "_id"])) {
+              CLCconfig = CLCconfig[item.properties[config.steps[step].colorMapProp + "_id"]];
+            }
+          } else {
+            let i = -1;
+            let o = CLCconfig.hardcoded.some(function (m) {
+              i++;
+              return m.value == item.properties[config.steps[step].colorMapProp];
+            });
+            if (o) {
+              CLCconfig = CLCconfig.hardcoded[i];
+            }
+          }
+
+          config.steps[step].textColor = CLCconfig.valueColor;
+          let bg = tinycolor(CLCconfig.iconColor);
+          // while (bg.toHsl().s > 0.3) bg.desaturate(10);
+          while (bg.toHsl().l < 0.85) bg.lighten(10);
+          config.steps[step].backgroundColor = bg.toHexString();
+
+          config.steps[step].borderColor = CLCconfig.iconColor;
+        }
+
+        // default color
         if (config.steps[step].textColor === undefined) {
           config.steps[step].textColor = "#FFFFFF";
         }
@@ -220,17 +253,32 @@
         if (t.length === 1) t = "0" + t;
         let bColor = config.steps[step].backgroundColor + t;
 
-        timelineItem.style = "color: " + config.steps[step].textColor + "; background-color: " + bColor + "; border: solid 1px " + config.steps[step].borderColor + ";";
+        timelineItem.style =
+          "color: " + config.steps[step].textColor + "; background-color: " + bColor + "; border: solid 1px " + config.steps[step].borderColor + ";";
 
         if (config.steps[step].type === "extbackground") {
           timelineItem.type = "background";
           timelineItem.className = "extbackground";
           //timelineItem.style = "color: " + config.steps[step].textColor + "; background-color: " + bColor + "; border: solid 1px " + config.steps[step].borderColor + ";";
-          timelineItem.style = "color: " + config.steps[step].textColor + "; background-color: " + bColor + "; outline-offset : -1px; outline: solid 2px " + config.steps[step].borderColor + ";";
+          timelineItem.style =
+            "color: " +
+            config.steps[step].textColor +
+            "; background-color: " +
+            bColor +
+            "; outline-offset : -1px; outline: solid 2px " +
+            config.steps[step].borderColor +
+            ";";
         } else if (config.steps[step].type === "extbackground2") {
           timelineItem.type = "background";
           timelineItem.className = "extbackground";
-          timelineItem.style = "color: " + config.steps[step].textColor + "; background-color: " + bColor + "; border: solid 1px " + config.steps[step].borderColor + ";";
+          timelineItem.style =
+            "color: " +
+            config.steps[step].textColor +
+            "; background-color: " +
+            bColor +
+            "; border: solid 1px " +
+            config.steps[step].borderColor +
+            ";";
           //timelineItem.style = "color: " + config.steps[step].textColor + "; background-color: " + bColor + "; outline-offset : -2px; outline: solid 2px " + config.steps[step].borderColor + ";";
         } else timelineItem.type = config.steps[step].type;
         timelineItem.className = timelineItem.className + " " + level;
@@ -242,13 +290,18 @@
     }
   };
 
-  cwLayoutTimeline.prototype.manageComplementaryNode = function() {
+  cwLayoutTimeline.prototype.manageComplementaryNode = function () {
     var assoNode = {};
     // keep the node of the layout
     assoNode[this.mmNode.NodeID] = this.originalObject.associations[this.mmNode.NodeID];
     // complementary node
     for (let associationNode in this.originalObject.associations) {
-      if (this.originalObject.associations.hasOwnProperty(associationNode) && this.config.nodes && this.config.nodes[associationNode] && this.config.nodes[associationNode].isComplementaryNode) {
+      if (
+        this.originalObject.associations.hasOwnProperty(associationNode) &&
+        this.config.nodes &&
+        this.config.nodes[associationNode] &&
+        this.config.nodes[associationNode].isComplementaryNode
+      ) {
         assoNode[associationNode] = this.originalObject.associations[associationNode];
       }
     }
@@ -256,27 +309,36 @@
   };
 
   // obligatoire appeler par le system
-  cwLayoutTimeline.prototype.drawAssociations = function(output, associationTitleText, object) {
+  cwLayoutTimeline.prototype.drawAssociations = function (output, associationTitleText, object) {
     this.originalObject = object;
     this.JSONobjects = $.extend({}, object);
     this.JSONobjects.nodeID = this.nodeID;
     this.manageComplementaryNode();
 
-    if (cwApi.customLibs.utils === undefined || cwAPI.customLibs.utils.version === undefined || cwAPI.customLibs.utils.version < 1.8) {
-      output.push("<h2> Please Install Utils library 1.8 or higher</h2>");
+    if (cwApi.customLibs.utils === undefined || cwAPI.customLibs.utils.version === undefined || cwAPI.customLibs.utils.version < 2.4) {
+      output.push("<h2> Please Install Utils library 2.4 or higher</h2>");
       return;
     }
 
     output.push('<div class="cw-visible cwLayoutTimelineButtons" id="cwLayoutTimelineButtons_' + this.nodeID + '">');
-    if (cwApi.currentUser.PowerLevel === 1) output.push('<a class="btn page-action no-text fa fa-cogs" id="cwTimelineButtonsExpertMode' + this.nodeID + '" title="Expert mode"></i></a>');
-    output.push('<a class="btn page-action no-text fa fa-arrows-alt" id="cwTimelineButtonsFit' + this.nodeID + '" title="' + $.i18n.prop("deDiagramOptionsButtonFitToScreen") + '"></a>');
+    if (cwApi.currentUser.PowerLevel === 1)
+      output.push('<a class="btn page-action no-text fa fa-cogs" id="cwTimelineButtonsExpertMode' + this.nodeID + '" title="Expert mode"></i></a>');
+    output.push(
+      '<a class="btn page-action no-text fa fa-arrows-alt" id="cwTimelineButtonsFit' +
+        this.nodeID +
+        '" title="' +
+        $.i18n.prop("deDiagramOptionsButtonFitToScreen") +
+        '"></a>'
+    );
     //output.push('<a class="btn page-action no-text fa fa-download" id="cwTimelineButtonsDownload' + this.nodeID + '" title="' + $.i18n.prop("download") + '"></a>');
-    output.push('<a class="btn page-action no-text fa fa-cubes" id="cwTimelineButtonsStack' + this.nodeID + '" title="' + $.i18n.prop("stack") + '"></a>');
+    output.push(
+      '<a class="btn page-action no-text fa fa-cubes" id="cwTimelineButtonsStack' + this.nodeID + '" title="' + $.i18n.prop("stack") + '"></a>'
+    );
     output.push("</div>");
     output.push('<div class="cw-visible" id="cwLayoutTimeline_' + this.nodeID + '"></div>');
   };
 
-  cwLayoutTimeline.prototype.applyJavaScript = function() {
+  cwLayoutTimeline.prototype.applyJavaScript = function () {
     var self = this;
     var libToLoad = [];
 
@@ -285,7 +347,7 @@
     } else {
       libToLoad = ["modules/vis/vis.min.js", "modules/jsTree/jstree.min.js"];
       // AsyncLoad
-      cwApi.customLibs.aSyncLayoutLoader.loadUrls(libToLoad, function(error) {
+      cwApi.customLibs.aSyncLayoutLoader.loadUrls(libToLoad, function (error) {
         if (error === null) {
           self.createTimeline();
         } else {
@@ -296,32 +358,32 @@
   };
 
   // Expert Mode Button Event
-  cwLayoutTimeline.prototype.enableExpertModeButtonEvent = function() {
+  cwLayoutTimeline.prototype.enableExpertModeButtonEvent = function () {
     var expertButton = document.getElementById("cwTimelineButtonsExpertMode" + this.nodeID);
     if (expertButton) {
       expertButton.addEventListener("click", this.manageExpertMode.bind(this));
     }
   };
 
-  cwLayoutTimeline.prototype.enableStackButtonEvent = function() {
+  cwLayoutTimeline.prototype.enableStackButtonEvent = function () {
     var stackButton = document.getElementById("cwTimelineButtonsStack" + this.nodeID);
     if (stackButton) {
       stackButton.addEventListener("click", this.manageStackButton.bind(this));
     }
   };
 
-  cwLayoutTimeline.prototype.enableFitButtonEvent = function() {
+  cwLayoutTimeline.prototype.enableFitButtonEvent = function () {
     var stackButton = document.getElementById("cwTimelineButtonsFit" + this.nodeID);
     var self = this;
     if (stackButton) {
-      stackButton.addEventListener("click", function() {
+      stackButton.addEventListener("click", function () {
         self.timeLineUI.fit();
       });
     }
   };
 
   // manage Expert Mode
-  cwLayoutTimeline.prototype.manageStackButton = function(event) {
+  cwLayoutTimeline.prototype.manageStackButton = function (event) {
     function customOrder(a, b) {
       // order by id
       return a.start - b.start;
@@ -347,13 +409,13 @@
     this.timeLineUI.setOptions(options);*/
   };
 
-  cwLayoutTimeline.prototype.deleteCurrentTimeline = function() {
+  cwLayoutTimeline.prototype.deleteCurrentTimeline = function () {
     this.timeLineUI.destroy();
     var timeLineContainer = document.getElementById("cwLayoutTimeline_" + this.nodeID);
     timeLineContainer.innerHTML = "";
   };
 
-  cwLayoutTimeline.prototype.createTimeline = function() {
+  cwLayoutTimeline.prototype.createTimeline = function () {
     this.enableExpertModeButtonEvent();
     this.enableStackButtonEvent();
     this.enableFitButtonEvent();
@@ -362,12 +424,12 @@
     this.createVisTimeline();
 
     var self = this;
-    $(window).resize(function() {
+    $(window).resize(function () {
       self.updateTimeline();
     });
   };
 
-  cwLayoutTimeline.prototype.updateTimeline = function() {
+  cwLayoutTimeline.prototype.updateTimeline = function () {
     this.manageComplementaryNode();
     this.getAndParseData();
     this.deleteCurrentTimeline();
@@ -375,16 +437,16 @@
   };
 
   // Building network
-  cwLayoutTimeline.prototype.getAndParseData = function() {
+  cwLayoutTimeline.prototype.getAndParseData = function () {
     this.timelineGroups = new vis.DataSet();
     this.timelineItems = new vis.DataSet();
     this.simplify(this.JSONobjects, { id: this.nodeID }, 1);
   };
 
   // Building network
-  cwLayoutTimeline.prototype.createVisTimeline = function() {
+  cwLayoutTimeline.prototype.createVisTimeline = function () {
     var timeLineContainer = document.getElementById("cwLayoutTimeline_" + this.nodeID);
-
+    if (!timeLineContainer) return;
     // set height
     var titleReact = document.querySelector("#cw-top-bar").getBoundingClientRect();
     var topBarReact = 52; //document.querySelector(".page-top").getBoundingClientRect();
@@ -418,7 +480,7 @@
     // Set first time bar
     this.timeLineUI.addCustomTime(new Date(), "customTimeBar");
 
-    this.timeLineUI.on("timechanged", function(properties) {
+    this.timeLineUI.on("timechanged", function (properties) {
       var timeBar = document.getElementsByClassName(properties.id)[0];
       if (timeBar.childElementCount > 1) timeBar.removeChild(timeBar.lastChild);
       var div = document.createElement("div");
@@ -427,7 +489,7 @@
     });
 
     var self = this;
-    this.timeLineUI.on("changed", function() {
+    this.timeLineUI.on("changed", function () {
       let results = document.querySelectorAll(".vis-content .vis-itemset div.vis-background div.vis-group");
       let groupHeight = 0;
       for (let i = 0; i < results.length; i++) {
@@ -464,7 +526,7 @@
     });
   };
 
-  cwLayoutTimeline.prototype.findNextGroup = function() {};
+  cwLayoutTimeline.prototype.findNextGroup = function () {};
 
   cwApi.cwLayouts.cwLayoutTimeline = cwLayoutTimeline;
 })(cwAPI, jQuery);

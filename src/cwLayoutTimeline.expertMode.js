@@ -1,13 +1,13 @@
 /* Copyright (c) 2012-2013 Casewise Systems Ltd (UK) - All rights reserved */
 
 /*global cwAPI, jQuery */
-(function(cwApi, $) {
+(function (cwApi, $) {
   "use strict";
   if (cwApi && cwApi.cwLayouts && cwApi.cwLayouts.cwLayoutTimeline) {
     var cwLayoutTimeline = cwApi.cwLayouts.cwLayoutTimeline;
   } else {
     // constructor
-    var cwLayoutTimeline = function(options, viewSchema) {
+    var cwLayoutTimeline = function (options, viewSchema) {
       cwApi.extend(this, cwApi.cwLayouts.CwLayout, options, viewSchema); // heritage
       cwApi.registerLayoutForJSActions(this); // execute le applyJavaScript après drawAssociations
       this.construct(options);
@@ -15,9 +15,9 @@
   }
 
   // manage Expert Mode
-  cwLayoutTimeline.prototype.manageExpertMode = function(event) {
+  cwLayoutTimeline.prototype.manageExpertMode = function (event) {
     var self = this;
-    cwApi.CwAsyncLoader.load("angular", function() {
+    cwApi.CwAsyncLoader.load("angular", function () {
       if (self.expertMode === true) {
         self.expertMode = false;
         event.target.title = $.i18n.prop("activate_expert_mode");
@@ -33,7 +33,7 @@
         self.setEventForExpertMode();
         self.selectTab("timelineNodes");
         self.selectTab("timelineNodes");
-        cwApi.CwPopout.onClose(function() {
+        cwApi.CwPopout.onClose(function () {
           self.expertMode = false;
           event.target.title = $.i18n.prop("activate_expert_mode");
         });
@@ -42,7 +42,7 @@
   };
 
   // manage Expert Mode
-  cwLayoutTimeline.prototype.createExpertModeElement = function() {
+  cwLayoutTimeline.prototype.createExpertModeElement = function () {
     var self = this;
     var tab = [];
     var tabs = ["timelineNodes"]; //, "general"];
@@ -66,7 +66,7 @@
     expertModeConfig.appendChild(treeContainer);
     expertModeConfig.appendChild(expertModeContainer);
 
-    tabs.forEach(function(t) {
+    tabs.forEach(function (t) {
       let tab = document.createElement("div");
       tab.className = "cwLayoutTimelineExpertModeTabs";
       tab.id = t;
@@ -82,7 +82,7 @@
     return expertModeConfig;
   };
 
-  cwLayoutTimeline.prototype.selectTab = function(id) {
+  cwLayoutTimeline.prototype.selectTab = function (id) {
     var self = this,
       loader = cwApi.CwAngularLoader;
     loader.setup();
@@ -101,22 +101,22 @@
 
     var $container = $("#cwLayoutTimelineExpertModeContainer");
 
-    loader.loadControllerWithTemplate(t.id, $container, templatePath, function($scope) {
+    loader.loadControllerWithTemplate(t.id, $container, templatePath, function ($scope) {
       $scope.metamodel = cwAPI.mm.getMetaModel();
       $scope.config = self.config;
       $scope.cwApi = cwApi;
 
-      $scope.toggle = function(c, e) {
+      $scope.toggle = function (c, e) {
         if (c.hasOwnProperty(e)) delete c[e];
         else c[e] = true;
       };
 
-      $scope.toggleArray = function(c, e) {
+      $scope.toggleArray = function (c, e) {
         var i = c.indexOf(e);
         if (i === -1) c.push(e);
         else c.splice(i, 1);
       };
-      $scope.isSelected = function(c, e) {
+      $scope.isSelected = function (c, e) {
         var i = c.indexOf(e);
         if (i === -1) return "";
         else return "selected";
@@ -125,18 +125,18 @@
       if (self["controller_" + t.id] && $scope.config) self["controller_" + t.id]($container, templatePath, $scope);
     });
   };
-  cwLayoutTimeline.prototype.setEventForExpertMode = function() {
+  cwLayoutTimeline.prototype.setEventForExpertMode = function () {
     var self = this;
     let matches = document.querySelectorAll(".cwLayoutTimelineExpertModeTabs");
     for (let i = 0; i < matches.length; i++) {
       let t = matches[i];
-      t.addEventListener("click", function(event) {
+      t.addEventListener("click", function (event) {
         self.selectTab(t.id);
       });
     }
   };
 
-  cwLayoutTimeline.prototype.unselectTabs = function(tabs) {
+  cwLayoutTimeline.prototype.unselectTabs = function (tabs) {
     let matches = document.querySelectorAll(".cwLayoutTimelineExpertModeTabs");
     for (let i = 0; i < matches.length; i++) {
       let t = matches[i];
@@ -144,14 +144,14 @@
     }
   };
 
-  cwLayoutTimeline.prototype.bootstrapFilter = function(id, value) {
-    window.setTimeout(function(params) {
+  cwLayoutTimeline.prototype.bootstrapFilter = function (id, value) {
+    window.setTimeout(function (params) {
       $("#" + id).selectpicker();
       $("#" + id).selectpicker("val", value);
     }, 1000);
   };
 
-  cwLayoutTimeline.prototype.nodeIDToFancyTree = function(node, noLoop) {
+  cwLayoutTimeline.prototype.nodeIDToFancyTree = function (node, noLoop) {
     var self = this;
     var exportNode = {};
     if (node === undefined) {
@@ -178,7 +178,7 @@
           }
         }
       }
-      node.SortedChildren.forEach(function(n) {
+      node.SortedChildren.forEach(function (n) {
         exportNode.children.push(self.nodeIDToFancyTree(self.viewSchema.NodesByID[n.NodeId]));
       });
     }
@@ -186,7 +186,7 @@
     return exportNode;
   };
 
-  cwLayoutTimeline.prototype.stepToFancyTree = function(step, id, parentNode) {
+  cwLayoutTimeline.prototype.stepToFancyTree = function (step, id, parentNode) {
     let node = {};
     node.id = id;
     node.parent = parentNode.NodeName;
@@ -198,7 +198,7 @@
     return node;
   };
 
-  cwLayoutTimeline.prototype.controller_timelineNodes = function($container, templatePath, $scope) {
+  cwLayoutTimeline.prototype.controller_timelineNodes = function ($container, templatePath, $scope) {
     $scope.ng = {};
     $scope.treeID = "cwLayoutTimelineExpertModeNodesConfigTree" + this.nodeID;
     $scope.optionString = {};
@@ -212,15 +212,15 @@
 
     if (q.cwtabid) tab = q.cwtabid;
     if (this.viewSchema.Tab && this.viewSchema.Tab.Tabs) {
-      this.viewSchema.Tab.Tabs.forEach(function(t) {
+      this.viewSchema.Tab.Tabs.forEach(function (t) {
         if (t.Id === tab) {
-          t.Nodes.forEach(function(n) {
+          t.Nodes.forEach(function (n) {
             source.push(self.nodeIDToFancyTree(self.viewSchema.NodesByID[n]));
           });
         }
       });
     } else {
-      self.viewSchema.RootNodesId.forEach(function(n) {
+      self.viewSchema.RootNodesId.forEach(function (n) {
         source.push(self.nodeIDToFancyTree(self.viewSchema.NodesByID[n]));
       });
     }
@@ -231,7 +231,7 @@
       source = tmpsource;
     }
 
-    $scope.loadtree = function() {
+    $scope.loadtree = function () {
       // define right click action on the jstree
       function contextMenu(node) {
         var items = {};
@@ -240,8 +240,18 @@
           items.createStep = {
             label: "Create Step",
             icon: "fa fa-plus",
-            action: function(questo) {
-              let newNodeID = tree.create_node(node, { text: "Step", parent: "node.original.NodeName", type: "file", NodeID: node.original.NodeID, objectTypeScriptName: node.original.objectTypeScriptName }, node.children.length - node.original.SortedChildren.length);
+            action: function (questo) {
+              let newNodeID = tree.create_node(
+                node,
+                {
+                  text: "Step",
+                  parent: "node.original.NodeName",
+                  type: "file",
+                  NodeID: node.original.NodeID,
+                  objectTypeScriptName: node.original.objectTypeScriptName,
+                },
+                node.children.length - node.original.SortedChildren.length
+              );
               if ($scope.config.nodes[node.original.NodeID] === undefined) $scope.config.nodes[node.original.NodeID] = { steps: {} };
               $scope.config.nodes[node.original.NodeID].steps[newNodeID] = { cds: "{name}" };
             },
@@ -250,14 +260,14 @@
           items.renameStep = {
             label: "Rename Step",
             icon: "fa fa-pencil",
-            action: function(obj) {
+            action: function (obj) {
               tree.edit(node);
             },
           };
           items.deleteStep = {
             label: "Delete Step",
             icon: "fa fa-trash",
-            action: function(obj) {
+            action: function (obj) {
               tree.delete_node($(node));
               delete $scope.config.nodes[node.original.NodeID].steps[node.id];
               self.updateTimeline();
@@ -269,11 +279,11 @@
 
       $(".cwLayoutTimelineExpertModeNodesConfigTree")
         // onselect event
-        .on("changed.jstree", function(e, data) {
+        .on("changed.jstree", function (e, data) {
           if (data.node && data.node.original) {
             $scope.ng.nodeID = data.node.original.NodeID;
             let node = self.viewSchema.NodesByID[$scope.ng.nodeID];
-            $scope.ng.PropertiesSelected = node.PropertiesSelected.map(function(n) {
+            $scope.ng.PropertiesSelected = node.PropertiesSelected.map(function (n) {
               return cwAPI.mm.getProperty(node.ObjectTypeScriptName, n);
             });
             if (data.node.type === "default") {
@@ -290,9 +300,16 @@
               $scope.ng.stepConfig = $scope.config.nodes[data.node.original.NodeID].steps[data.node.id];
               if ($scope.ng.stepConfig.extendEndDateSteps === undefined) $scope.ng.stepConfig.extendEndDateSteps = [];
               $scope.childStepAvailable = [];
+
+              $scope.ng.colorMappingAvailable = false;
+              if (cwApi.customLibs && cwApi.customLibs.utils && cwApi.customLibs.utils.getCustomLayoutConfiguration) {
+                let colorMappingConfig = cwApi.customLibs.utils.getCustomLayoutConfiguration("property");
+                if (colorMappingConfig) $scope.ng.colorMappingAvailable = true;
+              }
+
               let tree = $("#" + $scope.treeID).jstree(true);
               let parent = tree.get_node(data.node.parent);
-              parent.children_d.forEach(function(cId) {
+              parent.children_d.forEach(function (cId) {
                 if (cId == data.node.id) return;
                 let c = tree.get_node(cId);
                 if (c.type === "file") {

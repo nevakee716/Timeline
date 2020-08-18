@@ -219,7 +219,37 @@
               </div>
             </td>
           </tr>
-          <tr class="cwLayout_expertModeTableSelect">
+
+          <tr ng-if="ng.colorMappingAvailable">
+            <th>Use Property Color Mapping :</th>
+            <td class="cw-edit-property-value">
+              <input class="cw-edit-attr" ng-model-options="{ debounce: 200 }" ng-model="ng.stepConfig.enableColorMapping" type="checkbox" />
+            </td>
+          </tr>
+
+          <tr class="cwLayout_expertModeTableSelect" ng-if="ng.stepConfig.enableColorMapping">
+            <th>Property Used For Color Mapping :</th>
+            <td>
+              <select
+                class="cw-edit-attr cw-edit-attr-combobox"
+                ng-change="updateTimeline()"
+                ng-model-options="{ debounce: 200 }"
+                ng-model="ng.stepConfig.colorMapProp"
+              >
+                <optgroup label="Properties">
+                  <option
+                    ng-if="p.type==='Lookup'"
+                    value="{{sp}}"
+                    ng-selected="sp == ng.stepConfig.colorMapProp"
+                    ng-repeat="(sp, p) in objectType.properties"
+                    >{{p.name}} ({{sp}})</option
+                  >
+                </optgroup>
+              </select>
+            </td>
+          </tr>
+
+          <tr ng-if="!ng.stepConfig.enableColorMapping" class="cwLayout_expertModeTableSelect">
             <th>Text Color:</th>
             <td class="cw-edit-property-value" style="width: 25px;">
               <input
@@ -232,7 +262,7 @@
               />
             </td>
           </tr>
-          <tr class="cwLayout_expertModeTableSelect">
+          <tr ng-if="!ng.stepConfig.enableColorMapping" class="cwLayout_expertModeTableSelect">
             <th>Background Color:</th>
             <td class="cw-edit-property-value" style="width: 25px;">
               <input
@@ -245,7 +275,7 @@
               />
             </td>
           </tr>
-          <tr class="cwLayout_expertModeTableSelect">
+          <tr ng-if="!ng.stepConfig.enableColorMapping" class="cwLayout_expertModeTableSelect">
             <th>Background Transparency (%):</th>
             <td class="cw-edit-property-value" style="width: 25px;">
               <input
@@ -256,7 +286,7 @@
               />
             </td>
           </tr>
-          <tr class="cwLayout_expertModeTableSelect">
+          <tr ng-if="!ng.stepConfig.enableColorMapping" class="cwLayout_expertModeTableSelect">
             <th ng-if="ng.stepConfig.type !== 'point'">Border Color:</th>
             <th ng-if="ng.stepConfig.type === 'point'">Dot Color:</th>
             <td class="cw-edit-property-value" style="width: 25px;">
