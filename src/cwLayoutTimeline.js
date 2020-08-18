@@ -197,7 +197,6 @@
         }
 
         // set colours
-
         if (
           config.steps[step].enableColorMapping &&
           cwApi.customLibs &&
@@ -215,6 +214,9 @@
             }
           } else {
             let i = -1;
+            if (item.properties[config.steps[step].colorMapProp] == cwApi.cwConfigs.UndefinedValue)
+              item.properties[config.steps[step].colorMapProp] = $.i18n.prop("global_undefined");
+
             let o = CLCconfig.hardcoded.some(function (m) {
               i++;
               return m.value == item.properties[config.steps[step].colorMapProp];
