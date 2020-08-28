@@ -226,13 +226,22 @@
             }
           }
 
-          config.steps[step].textColor = CLCconfig.valueColor;
           let bg = tinycolor(CLCconfig.iconColor);
           // while (bg.toHsl().s > 0.3) bg.desaturate(10);
           while (bg.toHsl().l < 0.85) bg.lighten(10);
           config.steps[step].backgroundColor = bg.toHexString();
-
+          config.steps[step].textColor = CLCconfig.valueColor ? CLCconfig.valueColor : CLCconfig.iconColor;
           config.steps[step].borderColor = CLCconfig.iconColor;
+
+          if (config.steps[step].type == "point") {
+            timelineItem.content =
+              '<i class="iconDotTimeline ' +
+              CLCconfig.icon +
+              '" style="color:' +
+              CLCconfig.iconColor +
+              '"aria-hidden="true"></i>' +
+              timelineItem.content;
+          }
         }
 
         // default color
@@ -254,9 +263,17 @@
         t = t.toString(16);
         if (t.length === 1) t = "0" + t;
         let bColor = config.steps[step].backgroundColor + t;
-
+        let bWidth = config.steps[step].type === "point" ? "0px" : "1px";
         timelineItem.style =
-          "color: " + config.steps[step].textColor + "; background-color: " + bColor + "; border: solid 1px " + config.steps[step].borderColor + ";";
+          "color: " +
+          config.steps[step].textColor +
+          "; background-color: " +
+          bColor +
+          "; border: solid " +
+          bWidth +
+          " " +
+          config.steps[step].borderColor +
+          ";";
 
         if (config.steps[step].type === "extbackground") {
           timelineItem.type = "background";
@@ -412,7 +429,7 @@
   };
 
   cwLayoutTimeline.prototype.deleteCurrentTimeline = function () {
-    this.timeLineUI.destroy();
+    if (this.timeLineUI && this.timeLineUI.destroy) this.timeLineUI.destroy();
     var timeLineContainer = document.getElementById("cwLayoutTimeline_" + this.nodeID);
     timeLineContainer.innerHTML = "";
   };
@@ -472,6 +489,30 @@
       margin: {
         item: {
           horizontal: 0,
+        },
+      },
+      format: {
+        minorLabels: {
+          millisecond: "SSS",
+          second: "s",
+          minute: "HH:mm",
+          hour: "HH:mm",
+          weekday: "ddd D",
+          day: "D",
+          week: "w",
+          month: "MMM",
+          year: "YYYY",
+        },
+        majorLabels: {
+          millisecond: "HH:mm:ss",
+          second: "D MMMM HH:mm",
+          minute: "ddd D MMMM",
+          hour: "ddd D MMMM",
+          weekday: "MMMM YYYY",
+          day: "MMMM YYYY",
+          week: "MMMM YYYY",
+          month: "YYYY",
+          year: "",
         },
       },
     };

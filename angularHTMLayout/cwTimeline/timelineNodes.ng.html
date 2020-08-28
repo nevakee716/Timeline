@@ -79,9 +79,9 @@
               ng-model-options="{ debounce: 200 }"
               ng-model="ng.nodeConfig.sortProp"
             >
-              <option value="{{p.scriptName}}" ng-selected="sp == ng.stepConfig.sortProp" ng-repeat="p in ng.PropertiesSelected"
-                >{{p.name}} ({{p.scriptName}})</option
-              >
+              <option value="{{p.scriptName}}" ng-selected="sp == ng.stepConfig.sortProp" ng-repeat="p in ng.PropertiesSelected"></option>
+                {{p.name}} ({{p.scriptName}})
+              </option>
             </select>
           </td>
         </tr>
@@ -147,10 +147,11 @@
                 <option
                   ng-if="p.type==='Date'"
                   value="{{sp}}"
-                  ng-selected="sp == ng.stepConfig.startProp"
+                  ng-selected="sp == ng.stepConfig.startProp" 
                   ng-repeat="(sp, p) in objectType.properties"
-                  >{{p.name}} ({{sp}})</option
                 >
+                  {{p.name}} ({{sp}})
+                </option>
               </select>
             </td>
           </tr>
@@ -172,8 +173,9 @@
                     value="{{sp}}"
                     ng-selected="sp == ng.stepConfig.endProp"
                     ng-repeat="(sp, p) in objectType.properties"
-                    >{{p.name}} ({{sp}})</option
                   >
+                    {{p.name}} ({{sp}})
+                  </option>
                 </optgroup>
               </select>
             </td>
@@ -242,8 +244,9 @@
                     value="{{sp}}"
                     ng-selected="sp == ng.stepConfig.colorMapProp"
                     ng-repeat="(sp, p) in objectType.properties"
-                    >{{p.name}} ({{sp}})</option
                   >
+                    {{p.name}} ({{sp}})
+                  </option>
                 </optgroup>
               </select>
             </td>
@@ -251,33 +254,33 @@
 
           <tr ng-if="!ng.stepConfig.enableColorMapping" class="cwLayout_expertModeTableSelect">
             <th>Text Color:</th>
-            <td class="cw-edit-property-value" style="width: 25px;">
+            <td class="cw-edit-property-value" style="width: 25px">
               <input
                 ng-model-options="{ debounce: 1000 }"
                 ng-model="ng.stepConfig.textColor"
                 ng-change="updateTimeline()"
                 type="color"
                 id="html5colorpicker"
-                style="width: 20px;"
+                style="width: 20px"
               />
             </td>
           </tr>
           <tr ng-if="!ng.stepConfig.enableColorMapping" class="cwLayout_expertModeTableSelect">
             <th>Background Color:</th>
-            <td class="cw-edit-property-value" style="width: 25px;">
+            <td class="cw-edit-property-value" style="width: 25px">
               <input
                 ng-model-options="{ debounce: 1000 }"
                 ng-model="ng.stepConfig.backgroundColor"
                 ng-change="updateTimeline()"
                 type="color"
                 id="html5colorpicker"
-                style="width: 20px;"
+                style="width: 20px"
               />
             </td>
           </tr>
-          <tr ng-if="!ng.stepConfig.enableColorMapping" class="cwLayout_expertModeTableSelect">
+          <tr class="cwLayout_expertModeTableSelect">
             <th>Background Transparency (%):</th>
-            <td class="cw-edit-property-value" style="width: 25px;">
+            <td class="cw-edit-property-value" style="width: 25px">
               <input
                 ng-model-options="{ debounce: 1000 }"
                 ng-model="ng.stepConfig.backgroundTransparent"
@@ -289,14 +292,14 @@
           <tr ng-if="!ng.stepConfig.enableColorMapping" class="cwLayout_expertModeTableSelect">
             <th ng-if="ng.stepConfig.type !== 'point'">Border Color:</th>
             <th ng-if="ng.stepConfig.type === 'point'">Dot Color:</th>
-            <td class="cw-edit-property-value" style="width: 25px;">
+            <td class="cw-edit-property-value" style="width: 25px">
               <input
                 ng-model-options="{ debounce: 1000 }"
                 ng-model="ng.stepConfig.borderColor"
                 ng-change="updateTimeline()"
                 type="color"
                 id="html5colorpicker"
-                style="width: 20px;"
+                style="width: 20px"
               />
             </td>
           </tr>
