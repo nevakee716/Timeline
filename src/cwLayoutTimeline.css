@@ -32,9 +32,11 @@
 }
 .cwLayoutTimelineButtons .btn.page-action {
   background-color: #546e7a;
+  color: #ffffff;
 }
 .cwLayoutTimelineButtons .btn.page-action.selected {
   background-color: #03a0ce;
+  color: #ffffff;
 }
 .cwLayoutTimelineExpertModeConfig div.cwLayoutTimelineExpertModeContainerTab {
   display: flex;
