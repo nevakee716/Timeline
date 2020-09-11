@@ -19,6 +19,7 @@
     try {
       this.config = JSON.parse(this.options.CustomOptions["configuration"]);
     } catch (e) {
+      this.config = { nodes: {} };
       console.log(e);
     }
   };
@@ -317,6 +318,7 @@
     for (let associationNode in this.originalObject.associations) {
       if (
         this.originalObject.associations.hasOwnProperty(associationNode) &&
+        this.config &&
         this.config.nodes &&
         this.config.nodes[associationNode] &&
         this.config.nodes[associationNode].isComplementaryNode
@@ -478,14 +480,12 @@
 
     var options = {
       groupOrder: "sort", // groupOrder can be a property name or a sorting function,
-      stack: this.config.stack,
-      stackSubgroups: this.config.stack,
+
       groupHeightMode: "fixed",
       orientation: "top",
       verticalScroll: true,
       maxHeight: canvaHeight,
-      start: this.minDate,
-      end: this.maxDate,
+
       margin: {
         item: {
           horizontal: 0,
@@ -516,6 +516,10 @@
         },
       },
     };
+    if (this.minDate !== undefined) options.start = this.minDate;
+    if (this.minDate !== undefined) options.end = this.maxDate;
+    if (this.stack !== undefined) options.stack = this.stack;
+    if (this.stack !== undefined) options.stackSubgroups = this.stack;
 
     if (this.config.stack === true) options.order = customOrder;
     this.timeLineUI = new vis.Timeline(timeLineContainer, this.timelineItems, this.timelineGroups, options);
