@@ -31,11 +31,11 @@
   position: absolute;
 }
 .cwLayoutTimelineButtons .btn.page-action {
-  background-color: #546e7a;
+  background-color: #03a0ce;
   color: #ffffff;
 }
 .cwLayoutTimelineButtons .btn.page-action.selected {
-  background-color: #03a0ce;
+  background-color: #3bd0fc;
   color: #ffffff;
 }
 .cwLayoutTimelineExpertModeConfig div.cwLayoutTimelineExpertModeContainerTab {
