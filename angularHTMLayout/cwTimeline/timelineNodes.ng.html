@@ -79,7 +79,7 @@
               ng-model-options="{ debounce: 200 }"
               ng-model="ng.nodeConfig.sortProp"
             >
-              <option value="{{p.scriptName}}" ng-selected="sp == ng.stepConfig.sortProp" ng-repeat="p in ng.PropertiesSelected"></option>
+              <option value="{{p.scriptName}}" ng-selected="sp == ng.stepConfig.sortProp" ng-repeat="p in ng.PropertiesSelected">
                 {{p.name}} ({{p.scriptName}})
               </option>
             </select>
@@ -147,7 +147,7 @@
                 <option
                   ng-if="p.type==='Date'"
                   value="{{sp}}"
-                  ng-selected="sp == ng.stepConfig.startProp" 
+                  ng-selected="sp == ng.stepConfig.startProp"
                   ng-repeat="(sp, p) in objectType.properties"
                 >
                   {{p.name}} ({{sp}})
