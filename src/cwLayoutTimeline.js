@@ -362,7 +362,6 @@
   cwLayoutTimeline.prototype.applyJavaScript = function () {
     var self = this;
     var libToLoad = [];
-
     if (cwAPI.isDebugMode() === true) {
       self.createTimeline();
     } else {
@@ -443,7 +442,6 @@
 
     this.getAndParseData();
     this.createVisTimeline();
-
     var self = this;
     $(window).resize(function () {
       self.updateTimeline();
@@ -516,12 +514,13 @@
         },
       },
     };
-    if (this.minDate !== undefined) options.start = this.minDate;
-    if (this.minDate !== undefined) options.end = this.maxDate;
+    options.start = this.minDate ? this.minDate : new Date().toDateString();
+    options.end = this.maxDate ? this.maxDate : new Date().toDateString();
     if (this.stack !== undefined) options.stack = this.stack;
     if (this.stack !== undefined) options.stackSubgroups = this.stack;
 
     if (this.config.stack === true) options.order = customOrder;
+
     this.timeLineUI = new vis.Timeline(timeLineContainer, this.timelineItems, this.timelineGroups, options);
 
     // Set first time bar
