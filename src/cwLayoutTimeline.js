@@ -356,7 +356,7 @@
       '<a class="btn page-action no-text fa fa-cubes" id="cwTimelineButtonsStack' + this.nodeID + '" title="' + $.i18n.prop("stack") + '"></a>'
     );
     output.push("</div>");
-    output.push('<div class="cw-visible" id="cwLayoutTimeline_' + this.nodeID + '"></div>');
+    output.push('<div class="cwLayoutTimeline"> <div class="cw-visible" id="cwLayoutTimeline_' + this.nodeID + '"></div></div>');
   };
 
   cwLayoutTimeline.prototype.applyJavaScript = function () {

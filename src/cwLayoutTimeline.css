@@ -38,6 +38,9 @@
   background-color: #3bd0fc;
   color: #ffffff;
 }
+.cwLayoutTimeline {
+  width: 100%;
+}
 .cwLayoutTimelineExpertModeConfig div.cwLayoutTimelineExpertModeContainerTab {
   display: flex;
 }
