@@ -136,6 +136,18 @@
             </td>
           </tr>
           <tr class="cwLayout_expertModeTableSelect">
+            <th>Spread From Father</th>
+            <td>
+              <input
+                class="cw-edit-attr"
+                ng-model-options="{ debounce: 1000 }"
+                ng-model="ng.stepConfig.spreadFromFather"
+                ng-change="updateTimeline()"
+                type="checkbox"
+              />
+            </td>
+          </tr>
+          <tr class="cwLayout_expertModeTableSelect">
             <th>Start Date Property :</th>
             <td>
               <select

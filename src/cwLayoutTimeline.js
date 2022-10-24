@@ -47,13 +47,13 @@
       if (child.associations.hasOwnProperty(associationNode)) {
         for (var i = 0; i < child.associations[associationNode].length; i += 1) {
           var nextChild = child.associations[associationNode][i];
-          callback(nextChild, associationNode);
+          callback(nextChild, associationNode, i);
         }
       }
     }
   };
 
-  cwLayoutTimeline.prototype.simplify = function (child, father, level) {
+  cwLayoutTimeline.prototype.simplify = function (child, father, level, initIter) {
     var childrenArray = [];
     var filterArray = [];
     var filtersGroup = [];
@@ -63,12 +63,12 @@
     var self = this;
 
     if (child && child.associations) {
-      this.parseNode(child, function (nextChild, associationNode) {
+      this.parseNode(child, function (nextChild, associationNode, iter) {
         let config = self.config.nodes[nextChild.nodeID];
         if (config === undefined) config = {};
         if (config.isHidden) {
           // jumpAndMerge when hidden
-          childrenArray = childrenArray.concat(self.simplify(nextChild, father, level));
+          childrenArray = childrenArray.concat(self.simplify(nextChild, father, level, initIter));
         } else {
           // adding regular node
           element = {};
@@ -87,7 +87,8 @@
             if (config.sortProp) element.sort = nextChild.properties[config.sortProp];
             if (config.isCollapse) element.showNested = false;
             element.group = father;
-            if (config.specificLane === "" || config.specificLane === undefined) element.children = self.simplify(nextChild, element, level + 1);
+            if (config.specificLane === "" || config.specificLane === undefined)
+              element.children = self.simplify(nextChild, element, level + 1, initIter + iter);
             if (element.children.length > 0) {
               element.nestedGroups = [];
               for (var k = 0; k < element.children.length; k += 1) {
@@ -107,7 +108,7 @@
               element2.id = element.id + "_" + config.specificLane;
               element2.group = element.id;
               element2.content = config.specificLane;
-              element2.children = self.simplify(nextChild, element2, level + 2);
+              element2.children = self.simplify(nextChild, element2, level + 2, initIter + iter);
               if (element2.children.length > 0) {
                 element2.nestedGroups = [];
                 for (var k = 0; k < element2.children.length; k += 1) {
@@ -123,14 +124,14 @@
             }
 
             if (self.timelineGroups.get(element.id) === null) self.timelineGroups.add(element);
-            self.createTimelineItem(nextChild, element, element.id, config, level);
+            self.createTimelineItem(nextChild, element, element.id, config, level, initIter + iter);
             childrenArray.push(element);
           } else {
             //father.children = self.simplify(nextChild, father, level);
             let arr = [];
 
-            self.createTimelineItem(nextChild, element, father.id, config, level);
-            arr = self.simplify(nextChild, father, level);
+            self.createTimelineItem(nextChild, element, father.id, config, level, initIter + iter);
+            arr = self.simplify(nextChild, father, level, initIter + iter);
 
             childrenArray = childrenArray.concat(arr);
             if (father && father.childrenSteps) father.childrenSteps = father.childrenSteps.concat(element.steps);
@@ -163,15 +164,17 @@
     return max;
   };
 
-  cwLayoutTimeline.prototype.createTimelineItem = function (item, elem, group, config, level) {
+  cwLayoutTimeline.prototype.setStepColor = function (item, elem, group, config, level) {};
+  cwLayoutTimeline.prototype.createTimelineItem = function (item, elem, group, config, level, iter) {
     var self = this;
     if (config === undefined) return;
     for (let step in config.steps) {
       if (
         config.steps.hasOwnProperty(step) &&
-        config.steps[step].startProp &&
-        item.properties[config.steps[step].startProp] != "1899-12-30T00:00:00" &&
-        (config.steps[step].endProp || config.steps[step].type === "point" || config.steps[step].type === "box")
+        ((config.steps[step].startProp &&
+          item.properties[config.steps[step].startProp] != "1899-12-30T00:00:00" &&
+          (config.steps[step].endProp || config.steps[step].type === "point" || config.steps[step].type === "box")) ||
+          config.steps[step].spreadFromFather)
       ) {
         let timelineItem = {};
         let displayStep = true;
@@ -183,16 +186,22 @@
           timelineItem.content = cwAPI.customLibs.utils.getCustomDisplayString(config.steps[step].cds, item);
         }
         timelineItem.cid = step;
-        timelineItem.start = new Date(item.properties[config.steps[step].startProp]);
-        if (this.minDate === undefined || timelineItem.start < this.minDate) this.minDate = timelineItem.start;
 
-        if (config.steps[step].sortProp) timelineItem.sort = item.properties[config.sortProp];
-        else timelineItem.sort = timelineItem.start;
-        if (config.steps[step].endProp) {
-          timelineItem.end = this.getEndDate(config.steps[step], item, elem);
-          if (timelineItem.end === null) displayStep = false;
+        if (config.steps[step].spreadFromFather) {
+          let d = new Date("01/01/2021");
+          timelineItem.start = new Date(d.getTime() + 1000 * 3600 * 24 * iter);
+          timelineItem.end = new Date(d.getTime() + 1000 * 3600 * 24 * (iter + 1));
+        } else {
+          timelineItem.start = new Date(item.properties[config.steps[step].startProp]);
+          if (this.minDate === undefined || timelineItem.start < this.minDate) this.minDate = timelineItem.start;
+
+          if (config.steps[step].sortProp) timelineItem.sort = item.properties[config.sortProp];
+          else timelineItem.sort = timelineItem.start;
+          if (config.steps[step].endProp) {
+            timelineItem.end = this.getEndDate(config.steps[step], item, elem);
+            if (timelineItem.end === null) displayStep = false;
+          }
         }
-
         if (config.steps[step].tooltip !== undefined && config.steps[step].tooltip !== "") {
           timelineItem.title = cwAPI.customLibs.utils.getCustomDisplayString(config.steps[step].tooltip + "<@@><##>", item);
         }
@@ -333,7 +342,8 @@
   cwLayoutTimeline.prototype.drawAssociations = function (output, associationTitleText, object) {
     this.originalObject = object;
     this.JSONobjects = $.extend({}, object);
-    this.JSONobjects.nodeID = this.nodeID;
+    if (cwApi.isIndexPage()) this.JSONobjects.nodeID = this.nodeID;
+
     this.manageComplementaryNode();
 
     if (cwApi.customLibs.utils === undefined || cwAPI.customLibs.utils.version === undefined || cwAPI.customLibs.utils.version < 2.4) {
@@ -459,7 +469,16 @@
   cwLayoutTimeline.prototype.getAndParseData = function () {
     this.timelineGroups = new vis.DataSet();
     this.timelineItems = new vis.DataSet();
-    this.simplify(this.JSONobjects, { id: this.nodeID }, 1);
+    if (this.JSONobjects.name) {
+      this.testObjects = {
+        associations: {
+          objectPage: [this.JSONobjects],
+        },
+      };
+      this.simplify(this.testObjects, { id: this.nodeID }, 1, 0);
+    } else {
+      this.simplify(this.JSONobjects, { id: this.nodeID }, 1, 0);
+    }
   };
 
   // Building network
